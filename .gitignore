@@ -1,3 +1,4 @@
-
+// build files
+node_modules
 // env files
 .env
