@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/CryptoSmartNow/bitsave_zeta/issues"
   },
-  "homepage": "https://github.com/CryptoSmartNow/bitsave_zeta#readme"
+  "homepage": "https://github.com/CryptoSmartNow/bitsave_zeta#readme",
+  "devDependencies": {
+    "hardhat": "^2.13.1"
+  }
 }

@@ -15,7 +15,7 @@
 -- Flow
 
 * User saves in volatile token V.
-* User puts in penalty percentage they want to pay.
+* User puts in penalty percentage P they want to pay.
 * User interest B is calculated.
 ? User can chose to save in safe or risk mode
 - If safe mode:
