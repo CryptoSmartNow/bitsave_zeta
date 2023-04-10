@@ -1,0 +1,26 @@
+{
+  "name": "bitsave_zeta",
+  "version": "1.0.0",
+  "description": "Bitsave protocol written and deployed to the zeta blockchain",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/CryptoSmartNow/bitsave_zeta.git"
+  },
+  "keywords": [
+    "bitsave",
+    "protocol",
+    "savefi",
+    "zetachain",
+    "x"
+  ],
+  "author": "xpanvictor@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CryptoSmartNow/bitsave_zeta/issues"
+  },
+  "homepage": "https://github.com/CryptoSmartNow/bitsave_zeta#readme"
+}

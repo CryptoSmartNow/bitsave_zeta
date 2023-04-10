@@ -1,0 +1,58 @@
+// Bitsave flow in zetachain
+
+-- Features
+- Swap token 
+* to stable coin
+* to any other coin
+
+- Lock token
+
+- Withdraw token
+* As stable coin
+* In original coin
+* With interest in bitsave coin
+
+-- Flow
+
+* User saves in volatile token V.
+* User puts in penalty percentage they want to pay.
+* User interest B is calculated.
+? User can chose to save in safe or risk mode
+- If safe mode:
+  * Token V is converted to stable coin S.
+  * coin S is locked in user's account for time T.
+  * User waits till maturity time
+  ? If user breaks savings
+  - True
+    * S is unlocked from user's account
+    * Penalty P% is removed from S.
+    * Remaining S is converted to V.
+    * V is made available to user without extra interest B.
+  - False
+    * S is unlocked for user.
+    * S is converted to V
+    * Interest B is added to wallet.
+
+- Not safe mode
+  * Token V is locked for user.
+  ? If maturity failed
+    * Token is unlocked
+    * Penalty P% is removed from V.
+    * Remaining T is available for user.
+    * Interest B is not sent to user.
+  Else
+    * Token V is available for user.
+    * Interest B is sent to user.
+
+
+Safe vs Risk 
+If safe,
+  Amount saved is amout withdrawn
+    - Pros
+      * Drop in price due to volatility of token is avoided.
+    - Cons
+      * Profit in price of token is lost.
+
+Risk mode is opposite of safe mode.
+
+
