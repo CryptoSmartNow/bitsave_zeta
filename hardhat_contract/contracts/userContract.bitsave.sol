@@ -44,6 +44,8 @@ contract UserContract {
         uint penaltyPercentage
     ) public payable bitsaveOnly returns (uint) {
         uint startTime = block.timestamp;
+        // ensure saving does not exist
+        require(!savings[name], "Savings exist already");
         // check if end time valid
         require(maturityTime > startTime, "Maturity time of saving must be in the future!");
 
