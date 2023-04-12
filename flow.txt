@@ -17,7 +17,7 @@
 * User saves in volatile token V.
 * User puts in penalty percentage P they want to pay.
 * User interest B is calculated.
-? User can chose to save in safe or risk mode
+? User can choose to save in safe or risk mode
 - If safe mode:
   * Token V is converted to stable coin S.
   * coin S is locked in user's account for time T.
