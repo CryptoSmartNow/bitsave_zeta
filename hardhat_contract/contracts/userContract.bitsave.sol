@@ -64,14 +64,27 @@ contract UserContract {
         return saving.interestAccumulated;
     }
 
-    function addToSavings () public payable bitsaveOnly returns (uint) {
-        return 3;
+    // functionality to add to savings
+    // returns: uint interest accumulated
+    function addToSavings (string memory name) public payable bitsaveOnly returns (uint) {
+        SavingDataStruct toFundSavings = savings[name];
+        require(toFundSavings, "Saving to fund does not exist");
+        require(block.timestamp > toFundSavings.maturityTime, "Sorry, saving has ended");
+
+        // calculate new interest
+        uint recalculatedInterest = 1;
+        toFundSavings.interestAccumulated = toFundSavings.interestAccumulated + recalculatedInterest;
+        toFundSavings.amount = toFundSavings.amount + msg.value;
+
+        // save new savings data
+        savings[name] = toFundSavings;
+        return toFundSavings.interestAccumulated;
     }
 
-    function withdrawSavings (string name) public bitsaveOnly returns (string memory) {
+    function withdrawSavings (string memory name) public bitsaveOnly returns (string memory) {
         SavingDataStruct toWithdrawSavings = savings[name];
         // check if saving exit
-        require(toWithdrawSavings, "Saving does not exist");
+        require(toWithdrawSavings, "Saving to withdraw does not exist");
         uint amountToWithdraw;
         // check if saving is mature
         if (block.timestamp < toWithdrawSavings.maturityTime) {
@@ -86,6 +99,6 @@ contract UserContract {
         // send the savings amount to withdraw
         ownerAddress.transfer(amountToWithdraw);
         // todo: Delete savings
-        return 3;
+        return "savings withdrawn successfully";
     }
 }
