@@ -14,11 +14,12 @@ contract Bitsave {
   function createSavings(
   ) public returns (uint) {
     // functionality for creating savings
+    return 3;
   }
 
   function withdrawSavings(
   ) public returns (bool) {
-
+    return true;
   }
 
 }
