@@ -13,7 +13,8 @@ contract UserContract {
         uint tokenId;
         uint256 interestAccumulated;
         uint256 startTime;
-        uint256 endTime;
+        uint penaltyPercentage;
+        uint256 maturityTime;
     }
 
     // mapping of name of saving to individual saving
@@ -37,23 +38,25 @@ contract UserContract {
 
     // functionality to create savings
     // returns: uint interest accumulated
-    function createSavings(
-        memory string name,
-        uint endTime
+    function createSavings (
+        string memory name,
+        uint maturityTime,
+        uint penaltyPercentage
     ) public payable bitsaveOnly returns (uint) {
         uint startTime = block.timestamp;
         // check if end time valid
-        require(endTime > startTime, "Maturity time of saving must be in the future!");
+        require(maturityTime > startTime, "Maturity time of saving must be in the future!");
 
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae
 
         SavingDataStruct saving = SavingDataStruct({
             amount : msg.value,
-            endTime : endTime,
+            maturityTime : maturityTime,
             interestAccumulated : accumulatedInterest,
             startTime : startTime,
-            tokenId : 0
+            tokenId : 0,
+            penaltyPercentage : penaltyPercentage
         });
 
         // store saving to map of savings
@@ -65,8 +68,24 @@ contract UserContract {
         return 3;
     }
 
-    function withdrawSavings () public bitsaveOnly returns (uint) {
+    function withdrawSavings (string name) public bitsaveOnly returns (string memory) {
+        SavingDataStruct toWithdrawSavings = savings[name];
+        // check if saving exit
+        require(toWithdrawSavings, "Saving does not exist");
+        uint amountToWithdraw;
+        // check if saving is mature
+        if (block.timestamp < toWithdrawSavings.maturityTime) {
+            // remove penalty from savings
+            amountToWithdraw = toWithdrawSavings.amount * (1 - toWithdrawSavings.penaltyPercentage);
+            // todo: fn to convert token if not safe mode
+        }else {
+            // todo: functionality to send csa token as interest
+            ownerAddress.transfer(toWithdrawSavings.interestAccumulated);
+        }
 
+        // send the savings amount to withdraw
+        ownerAddress.transfer(amountToWithdraw);
+        // todo: Delete savings
         return 3;
     }
 }
