@@ -60,7 +60,7 @@ contract Bitsave {
       recipient: address(this),
       deadline: block.timestamp,
       amountIn: amountToSwap,
-      amountOutMinimum: 0, // todo: work on this
+      amountOutMinimum: 0, // todo: get this from an oracle
       sqrtPriceLimitX96: 0
     });
     // swap and return amount swapped for
@@ -69,8 +69,9 @@ contract Bitsave {
 
   // todo: the join bitsave functionality implementation, charges and co
   function joinBitsave() public payable {
+    require(msg.value > 10000, "Incomplete bitsave fee"); // todo: encapsulate
     // deploy child contract for user
-    address userBSAddress;
+    address userBSAddress = new UserContract{value: 1000}();
     addressToUserBS[msg.sender] = userBSAddress;
   }
 

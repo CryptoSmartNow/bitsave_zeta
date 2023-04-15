@@ -29,7 +29,7 @@ contract UserContract {
     }
     // ******+++++++++ Security functionalities ++++++++++++
 
-    constructor() {
+    constructor() payable {
         // save bitsaveAddress first // todo: retrieve correct address
         bitsaveAddress = msg.sender;
         // store owner's address
