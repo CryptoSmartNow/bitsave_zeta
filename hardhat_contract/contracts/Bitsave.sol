@@ -67,7 +67,7 @@ contract Bitsave {
     return swapRouter.exactInputSingle(params);
   }
 
-  // todo: the join bitsave functionality implementation, charges and co
+  // the join bitsave functionality implementation, charges and co
   function joinBitsave() public payable {
     require(msg.value > 10000, "Incomplete bitsave fee"); // todo: encapsulate
     // deploy child contract for user
@@ -75,26 +75,25 @@ contract Bitsave {
     addressToUserBS[msg.sender] = userBSAddress;
   }
 
-  //  /*
-  //  createSaving
-  //  @payable
-  //    Pay the amount to save to this function // todo: check for minimum value
-  //  @param:
-  //    string nameOfSaving,
-  //    uint256 timestamp of when savings should end
-  //    uint8 value of penalty percentage btwn 1-10
-  //    bool true for safe mode saving, false for risk mode
-  //  */
+  // /*
+  // createSaving
+  // @payable
+  //   Pay the amount to save to this function // todo: check for minimum value
+  // @param:
+  //   string nameOfSaving,
+  //   uint256 timestamp of when savings should end
+  //   uint8 value of penalty percentage btwn 1-10
+  //   bool true for safe mode saving, false for risk mode
+  // */
   function createSaving(
     string memory nameOfSaving,
     uint256 maturityTime, // todo: add ft to check minimum time diff
     uint8 penaltyPercentage,
     // safe/risk mode
     bool safeMode
-  ) public payable registeredOnly returns (uint) {
+  ) public payable registeredOnly {
 
     address savingToken;
-
     uint amountToSave = msg.value();
     // functionality for creating savings
     if (safeMode) {
@@ -103,20 +102,35 @@ contract Bitsave {
         usdc,
         amountToSave
       );
-      savingToken = usdc;
     }
     // Initialize user child contract
     UserContract userChildContract = UserContract(addressToUserBS[msg.sender]);
     // todo: pay txn
     // call create savings for child contract
-    userChildContract.createSavings(
+    userChildContract.createSavings.value(amountToSave)(
       nameOfSaving,
       maturityTime,
       penaltyPercentage,
       savingToken
     );
+  }
 
-    return 3;
+  function addToSavings(string memory nameOfSavings) public payable {
+    // initialize userChildContract
+    UserContract userChildContract = UserContract(addressToUserBS[msg.sender]);
+    // todo: perform amount conversion and everything
+    uint savingPlusAmount = msg.value;
+    // todo: check savings detail by reading the storage of userChildContract
+    bool isSafeMode = userChildContract.getSavingMode(nameOfSavings);
+    if (isSafeMode) {
+      savingPlusAmount = crossChainSwap(
+        userChildContract.getSavingTokenId(nameOfSavings),
+        usdc,
+        savingPlusAmount
+      );
+    }
+    // call withdrawSavings
+    userChildContract.addToSavings.value(savingPlusAmount)(nameOfSavings);
   }
 
   function withdrawSavings(

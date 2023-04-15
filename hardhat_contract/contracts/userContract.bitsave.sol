@@ -15,6 +15,7 @@ contract UserContract {
         uint256 startTime;
         uint penaltyPercentage;
         uint256 maturityTime;
+        bool isSafeMode;
     }
 
     // mapping of name of saving to individual saving
@@ -42,11 +43,12 @@ contract UserContract {
         string memory name,
         uint256 maturityTime,
         uint8 penaltyPercentage,
-        address tokenId
+        address tokenId,
+        bool isSafeMode
     ) public payable bitsaveOnly returns (uint) {
         uint startTime = block.timestamp;
-        // ensure saving does not exist
-        require(!savings[name], "Savings exist already");
+        // ensure saving does not exist; ! todo: this wont work
+        require(!savings[name].maturityTime, "Savings exist already");
         // check if end time valid
         require(maturityTime > startTime, "Maturity time of saving must be in the future!");
 
@@ -59,7 +61,8 @@ contract UserContract {
             interestAccumulated : accumulatedInterest,
             startTime : startTime,
             tokenId : tokenId,
-            penaltyPercentage : penaltyPercentage
+            penaltyPercentage : penaltyPercentage,
+            isSafeMode : isSafeMode
         });
 
         // store saving to map of savings
@@ -106,4 +109,14 @@ contract UserContract {
         delete savings[name];
         return "savings withdrawn successfully";
     }
+
+    // Contract Getters
+    function getSavingMode(string memory nameOfSaving) external returns (bool) {
+        return savings[nameOfSaving].isSafeMode;
+    }
+
+    function getSavingTokenId(string memory nameOfSaving) external returns (address) {
+        return savings[nameOfSaving].tokenId;
+    }
+
 }
