@@ -74,9 +74,19 @@ contract Bitsave {
     addressToUserBS[msg.sender] = userBSAddress;
   }
 
-  function createSavings(
+  //  /*
+  //  createSaving
+  //  @payable
+  //    Pay the amount to save to this function // todo: check for minimum value
+  //  @param:
+  //    string nameOfSaving,
+  //    uint256 timestamp of when savings should end
+  //    uint8 value of penalty percentage btwn 1-10
+  //    bool true for safe mode saving, false for risk mode
+  //  */
+  function createSaving(
     string memory nameOfSaving,
-    uint256 maturityTime,
+    uint256 maturityTime, // todo: add ft to check minimum time diff
     uint8 penaltyPercentage,
     // safe/risk mode
     bool safeMode
@@ -94,7 +104,7 @@ contract Bitsave {
       );
       savingToken = usdc;
     }
-
+    // Initialize user child contract
     UserContract userChildContract = UserContract(addressToUserBS[msg.sender]);
     // todo: pay txn
     // call create savings for child contract
@@ -109,7 +119,12 @@ contract Bitsave {
   }
 
   function withdrawSavings(
-  ) public returns (bool) {
+    string memory nameOfSavings
+  ) public registeredOnly returns (bool) {
+    // initialize user's child userChildContract
+    UserContract userChildContract = UserContract(addressToUserBS[msg.sender]);
+    // call withdraw savings fn
+    userChildContract.withdrawSavings(nameOfSavings);
     return true;
   }
 
