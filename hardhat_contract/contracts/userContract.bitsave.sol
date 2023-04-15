@@ -10,7 +10,7 @@ contract UserContract {
     // structure of saving data
     struct SavingDataStruct {
         uint256 amount;
-        uint tokenId;
+        address tokenId;
         uint256 interestAccumulated;
         uint256 startTime;
         uint penaltyPercentage;
@@ -42,7 +42,7 @@ contract UserContract {
         string memory name,
         uint maturityTime,
         uint penaltyPercentage,
-        uint tokenId
+        address tokenId
     ) public payable bitsaveOnly returns (uint) {
         uint startTime = block.timestamp;
         // ensure saving does not exist
@@ -100,8 +100,10 @@ contract UserContract {
         }
 
         // send the savings amount to withdraw
-        ownerAddress.transfer(amountToWithdraw);
-        // todo: Delete savings
+        address tokenId = toWithdrawSavings.tokenId;
+        tokenId.transfer(amountToWithdraw);
+        // Delete savings; todo: ensure saving is deleted
+        delete savings[name];
         return "savings withdrawn successfully";
     }
 }

@@ -1,14 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.5.0 <0.8.0;
 
+// Uniswap
+import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
-contract Bitsave is ZContract {
+
+contract Bitsave {
   // *********++++++ Storage +++++++********
 
   // ****Contract params****
   // router02 address
-  address _router02;
-  address _usdc;
+  address router02;
+  address usdc;
+  ISwapRouter public immutable swapRouter;
+  uint24 public constant poolFee = 3000;
   // ** Contract params **
 
   address[] usersAddresses;
@@ -17,19 +23,35 @@ contract Bitsave is ZContract {
 
   // *********------ Storage -------********
 
-  constructor(address router02, address usdc) {
+  constructor(ISwapRouter _swapRouter, address _router02, address _usdc) {
     // All constructor functions
-    _router02 = router02;
-    _usdc = usdc;
+    swapRouter = _swapRouter;
+    router02 = _router02;
+    usdc = _usdc;
   }
 
   function crossChainSwap (
+    address inputToken,
     address targetToken,
     uint amountToSwap
-  ) internal {
+  ) internal returns (uint){
     // receive the amount to swap
-    // convert the token to targetToken
-    // return amount swapped for
+    // Approve the router to spend the inputToken
+    TransferHelper.safeApprove(inputToken, address(swapRouter), amountToSwap);
+    // convert the token to targetToken by deriving parameters
+    ISwapRouter.ExactInputSingleParams memory params =
+    ISwapRouter.exactInputSingle({
+      tokenIn: inputToken,
+      tokenOut: targetToken,
+      fee: poolFee,
+      recipient: address(this),
+      deadline: block.timestamp,
+      amountIn: amountToSwap,
+      amountOutMinimum: 0, // todo: work on this
+      sqrtPriceLimitX96: 0
+    });
+    // swap and return amount swapped for
+    return swapRouter.exactInputSingle(params);
   }
 
   function joinBitsave() public payable {
@@ -42,11 +64,15 @@ contract Bitsave is ZContract {
     // safe/risk mode
     bool safeMode
   ) public payable returns (uint) {
+
+    address inputToken;
+
     uint amountToSave = msg.value();
     // functionality for creating savings
     if (!safeMode) {
       amountToSave = crossChainSwap(
-        _usdc,
+        inputToken,
+        usdc,
         amountToSave
       );
     }
