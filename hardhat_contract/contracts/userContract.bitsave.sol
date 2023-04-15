@@ -40,8 +40,8 @@ contract UserContract {
     // returns: uint interest accumulated
     function createSavings (
         string memory name,
-        uint maturityTime,
-        uint penaltyPercentage,
+        uint256 maturityTime,
+        uint8 penaltyPercentage,
         address tokenId
     ) public payable bitsaveOnly returns (uint) {
         uint startTime = block.timestamp;

@@ -4,6 +4,7 @@ pragma solidity >=0.5.0 <0.8.0;
 // Uniswap
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
+import "./userContract.bitsave.sol";
 
 
 contract Bitsave {
@@ -22,6 +23,18 @@ contract Bitsave {
   mapping (address => address) addressToUserBS;
 
   // *********------ Storage -------********
+
+  // ********++++++ Security +++++++********
+
+  modifier registeredOnly {
+    require(addressToUserBS[msg.sender] != 0, "User not registered to bitsave!");
+  }
+
+  // ********------ Security -------********
+
+  // ********------ Subcontract ----********
+  UserContract userChildContract;
+  // ********++++++ Subcontract ++++********
 
   constructor(ISwapRouter _swapRouter, address _router02, address _usdc) {
     // All constructor functions
@@ -54,6 +67,7 @@ contract Bitsave {
     return swapRouter.exactInputSingle(params);
   }
 
+  // todo: the join bitsave functionality implementation, charges and co
   function joinBitsave() public payable {
     // deploy child contract for user
     address userBSAddress;
@@ -61,21 +75,36 @@ contract Bitsave {
   }
 
   function createSavings(
+    string memory nameOfSaving,
+    uint256 maturityTime,
+    uint8 penaltyPercentage,
     // safe/risk mode
     bool safeMode
-  ) public payable returns (uint) {
+  ) public payable registeredOnly returns (uint) {
 
-    address inputToken;
+    address savingToken;
 
     uint amountToSave = msg.value();
     // functionality for creating savings
-    if (!safeMode) {
+    if (safeMode) {
       amountToSave = crossChainSwap(
-        inputToken,
+        savingToken,
         usdc,
         amountToSave
       );
+      savingToken = usdc;
     }
+
+    UserContract userChildContract = UserContract(addressToUserBS[msg.sender]);
+    // todo: pay txn
+    // call create savings for child contract
+    userChildContract.createSavings(
+      nameOfSaving,
+      maturityTime,
+      penaltyPercentage,
+      savingToken
+    );
+
     return 3;
   }
 
