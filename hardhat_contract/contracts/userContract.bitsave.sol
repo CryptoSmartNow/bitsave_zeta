@@ -41,7 +41,8 @@ contract UserContract {
     function createSavings (
         string memory name,
         uint maturityTime,
-        uint penaltyPercentage
+        uint penaltyPercentage,
+        uint tokenId
     ) public payable bitsaveOnly returns (uint) {
         uint startTime = block.timestamp;
         // ensure saving does not exist
@@ -57,7 +58,7 @@ contract UserContract {
             maturityTime : maturityTime,
             interestAccumulated : accumulatedInterest,
             startTime : startTime,
-            tokenId : 0,
+            tokenId : tokenId,
             penaltyPercentage : penaltyPercentage
         });
 
