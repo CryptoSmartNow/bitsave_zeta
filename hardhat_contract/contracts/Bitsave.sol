@@ -87,7 +87,7 @@ contract Bitsave {
     return userBSAddress;
   }
 
-  function getUserChildContractAddress() public returns (address) {
+  function getUserChildContractAddress() public view returns (address) {
     return addressToUserBS[msg.sender];
   }
 

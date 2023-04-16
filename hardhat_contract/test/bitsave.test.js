@@ -48,7 +48,9 @@ describe("Bitsave protocol", ()=>{
         it("Should set swapRouter correctly", async()=>{
             const {bitsave, swapRouter} = await loadFixture(deployBitsaveFixture);
 
-            expect(await bitsave.getSwapRouter()).to.equal(swapRouter);
+            expect(
+                (await bitsave.swapRouter()).toLowerCase()
+            ).to.equal(swapRouter.toLowerCase());
         })
     })
 
@@ -63,9 +65,9 @@ describe("Bitsave protocol", ()=>{
             const {bitsave} = await loadFixture(deployBitsaveFixture);
 
             const childAddressFromJoining = await bitsave.joinBitsave({value: 10000});
-            expect(childAddressFromJoining).to.be.equal(anyValue());
-            expect(childAddressFromJoining).to.be.properAddress;
-            expect(await bitsave.getUserChildContractAddress()).to.be.equal(childAddressFromJoining);
+            const childAddress = await bitsave.getUserChildContractAddress();
+            console.log(childAddress);
+            expect(childAddress).to.be.properAddress;
         })
         // can make tests for child contract directly
     })
