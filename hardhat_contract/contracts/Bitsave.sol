@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.0 <0.8.0;
+pragma solidity >=0.7.5;
+pragma abicoder v2;
 
 // Uniswap
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
@@ -28,6 +29,7 @@ contract Bitsave {
 
   modifier registeredOnly {
     require(addressToUserBS[msg.sender] != 0, "User not registered to bitsave!");
+    _;
   }
 
   // ********------ Security -------********
@@ -41,6 +43,14 @@ contract Bitsave {
     swapRouter = _swapRouter;
     router02 = _router02;
     usdc = _usdc;
+  }
+
+  function getSwapRouter() public returns(ISwapRouter swapRouter) {
+    return swapRouter;
+  }
+
+  function getstableCoin() public returns(address usdc) {
+    return usdc;
   }
 
   function crossChainSwap (
@@ -64,7 +74,8 @@ contract Bitsave {
       sqrtPriceLimitX96: 0
     });
     // swap and return amount swapped for
-    return swapRouter.exactInputSingle(params);
+    uint amountSwapped = swapRouter.exactInputSingle(params);
+    return amountSwapped;
   }
 
   // the join bitsave functionality implementation, charges and co
@@ -90,11 +101,18 @@ contract Bitsave {
     uint256 maturityTime, // todo: add ft to check minimum time diff
     uint8 penaltyPercentage,
     // safe/risk mode
-    bool safeMode
+    bool safeMode,
+    address tokenToSave, // todo: abstract away from code
+    uint amountToSave // necessary if saving is not native token
   ) public payable registeredOnly {
 
+    // first approve contract usage and remove of amount of token
+//    IERC20(tokenToSave).approve(address(this), amountToSave);
+//    IERC20(tokenToSave).transferFrom(msg.sender, address(this), amountToSave);
+    // ? if to save native token, need to send instead
+
     address savingToken;
-    uint amountToSave = msg.value();
+    uint amountOfWeiSent = msg.value;
     // functionality for creating savings
     if (safeMode) {
       amountToSave = crossChainSwap(
@@ -104,10 +122,10 @@ contract Bitsave {
       );
     }
     // Initialize user child contract
-    UserContract userChildContract = UserContract(addressToUserBS[msg.sender]);
+    userChildContract = UserContract(addressToUserBS[msg.sender]);
     // todo: pay txn
     // call create savings for child contract
-    userChildContract.createSavings.value(amountToSave)(
+    userChildContract.createSavings{value: amountToSave}(
       nameOfSaving,
       maturityTime,
       penaltyPercentage,
@@ -116,8 +134,9 @@ contract Bitsave {
   }
 
   function addToSavings(string memory nameOfSavings) public payable {
+    // todo: handle saving in token
     // initialize userChildContract
-    UserContract userChildContract = UserContract(addressToUserBS[msg.sender]);
+    userChildContract = UserContract(addressToUserBS[msg.sender]);
     // todo: perform amount conversion and everything
     uint savingPlusAmount = msg.value;
     // todo: check savings detail by reading the storage of userChildContract
@@ -130,18 +149,17 @@ contract Bitsave {
       );
     }
     // call withdrawSavings
-    userChildContract.addToSavings.value(savingPlusAmount)(nameOfSavings);
+    userChildContract.addToSavings{value: savingPlusAmount}(nameOfSavings);
   }
 
   function withdrawSavings(
     string memory nameOfSavings
   ) public registeredOnly returns (bool) {
     // initialize user's child userChildContract
-    UserContract userChildContract = UserContract(addressToUserBS[msg.sender]);
+    userChildContract = UserContract(addressToUserBS[msg.sender]);
     // call withdraw savings fn
     userChildContract.withdrawSavings(nameOfSavings);
     return true;
   }
 
 }
-

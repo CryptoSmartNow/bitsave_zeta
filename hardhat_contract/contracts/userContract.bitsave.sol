@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=^0.5.4 <= ^0.8.4;
+pragma solidity >0.6.0;
 
 contract UserContract {
 
     // ****--------- DS for user saving contract -----------
     address bitsaveAddress;
-    address ownerAddress;
+    address payable ownerAddress;
 
     // structure of saving data
     struct SavingDataStruct {
@@ -48,14 +48,14 @@ contract UserContract {
     ) public payable bitsaveOnly returns (uint) {
         uint startTime = block.timestamp;
         // ensure saving does not exist; ! todo: this wont work
-        require(!savings[name].maturityTime, "Savings exist already");
+        require(savings[name].maturityTime > 0, "Savings exist already");
         // check if end time valid
         require(maturityTime > startTime, "Maturity time of saving must be in the future!");
 
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae
 
-        SavingDataStruct saving = SavingDataStruct({
+        SavingDataStruct memory saving = SavingDataStruct({
             amount : msg.value,
             maturityTime : maturityTime,
             interestAccumulated : accumulatedInterest,
@@ -73,8 +73,8 @@ contract UserContract {
     // functionality to add to savings
     // returns: uint interest accumulated
     function addToSavings (string memory name) public payable bitsaveOnly returns (uint) {
-        SavingDataStruct toFundSavings = savings[name];
-        require(toFundSavings, "Saving to fund does not exist");
+        SavingDataStruct storage toFundSavings = savings[name];
+        require(toFundSavings != 0, "Saving to fund does not exist");
         require(block.timestamp > toFundSavings.maturityTime, "Sorry, saving has ended");
 
         // calculate new interest
@@ -87,10 +87,10 @@ contract UserContract {
         return toFundSavings.interestAccumulated;
     }
 
-    function withdrawSavings (string memory name) public bitsaveOnly returns (string memory) {
-        SavingDataStruct toWithdrawSavings = savings[name];
+    function withdrawSavings (string memory name) public payable bitsaveOnly returns (string memory) {
+        SavingDataStruct storage toWithdrawSavings = savings[name];
         // check if saving exit
-        require(toWithdrawSavings, "Saving to withdraw does not exist");
+        require(toWithdrawSavings != 0, "Saving to withdraw does not exist");
         uint amountToWithdraw;
         // check if saving is mature
         if (block.timestamp < toWithdrawSavings.maturityTime) {
@@ -104,7 +104,7 @@ contract UserContract {
 
         // send the savings amount to withdraw
         address tokenId = toWithdrawSavings.tokenId;
-        tokenId.transfer(amountToWithdraw);
+        ownerAddress.transfer(amountToWithdraw);
         // Delete savings; todo: ensure saving is deleted
         delete savings[name];
         return "savings withdrawn successfully";

@@ -6,6 +6,8 @@
 * to any other coin
 
 - Lock token
+    This has been remodelled as a parent-child contract relationship
+    basically, we send funds and savings details to child contract
 
 - Withdraw token
 * As stable coin
