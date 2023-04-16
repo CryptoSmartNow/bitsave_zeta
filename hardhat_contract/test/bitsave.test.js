@@ -1,19 +1,22 @@
 
+// const web3 = require("web3")
 const {loadFixture, time} = require("@nomicfoundation/hardhat-network-helpers")
 const {anyValue} = require("@nomicfoundation/hardhat-chai-matchers/withArgs")
 const {expect} = require("chai")
 const {ethers} = require("hardhat");
+const {USDC_ADDRESS, ROUTERADDRESS} = require("../constants/config")
+
 
 // test features to be written here
 describe("Bitsave protocol", ()=>{
     async function deployBitsaveFixture() {
         // args
-        const swapRouter = 0x4;
-        const routerAddress = 0x4;
-        const usdcAddress = 0x4;
+        const swapRouter = ROUTERADDRESS;
+        const routerAddress = ROUTERADDRESS;
+        const usdcAddress = USDC_ADDRESS;
         const ONE_GWEI = 1_000_000_000;
 
-        const [owner, otherAccount] = ethers.getSigners();
+        const [owner, otherAccount] = await ethers.getSigners();
 
         const Bitsave = await ethers.getContractFactory("Bitsave");
         const bitsave = await Bitsave.deploy(
@@ -39,7 +42,8 @@ describe("Bitsave protocol", ()=>{
         it("Should set stable coin as usdc", async ()=>{
             const {bitsave, usdcAddress} = await loadFixture(deployBitsaveFixture);
 
-            expect(await bitsave.getStableCoin()).to.equal(usdcAddress);
+            const retrievedStableCoinAddress = await bitsave.stableCoin();
+            expect(retrievedStableCoinAddress.toLowerCase()).to.equal(usdcAddress);
         })
         it("Should set swapRouter correctly", async()=>{
             const {bitsave, swapRouter} = await loadFixture(deployBitsaveFixture);
@@ -82,5 +86,9 @@ describe("Bitsave protocol", ()=>{
                 // todo: work on the data retrieval
             })
         })
+
+        describe("Increment savings", ()=>{})
+
+        describe("Withdraw savings", ()=>{})
     })
 })

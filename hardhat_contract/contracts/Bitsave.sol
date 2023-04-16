@@ -13,8 +13,8 @@ contract Bitsave {
 
   // ****Contract params****
   // router02 address
-  address router02;
-  address usdc;
+  address public router02;
+  address public stableCoin;
   ISwapRouter public immutable swapRouter;
   uint24 public constant poolFee = 3000;
   // ** Contract params **
@@ -38,19 +38,19 @@ contract Bitsave {
   UserContract userChildContract;
   // ********++++++ Subcontract ++++********
 
-  constructor(ISwapRouter _swapRouter, address _router02, address _usdc) {
+  constructor(ISwapRouter _swapRouter, address _router02, address _stableCoin) payable {
     // All constructor functions
     swapRouter = _swapRouter;
     router02 = _router02;
-    usdc = _usdc;
+    stableCoin = _stableCoin;
   }
 
   function getSwapRouter() public returns(ISwapRouter) {
     return swapRouter;
   }
 
-  function getstableCoin() public returns(address) {
-    return usdc;
+  function getStableCoin() public returns(address) {
+    return stableCoin;
   }
 
   function crossChainSwap (
@@ -80,7 +80,7 @@ contract Bitsave {
 
   // the join bitsave functionality implementation, charges and co
   function joinBitsave() public payable returns (address) {
-    require(msg.value > 10000, "Incomplete bitsave fee"); // todo: encapsulate
+    require(msg.value >= 10000, "Incomplete bitsave fee"); // todo: encapsulate
     // deploy child contract for user
     address userBSAddress = address(new UserContract{value: 1000}());
     addressToUserBS[msg.sender] = userBSAddress;
@@ -122,7 +122,7 @@ contract Bitsave {
     if (safeMode) {
       amountToSave = crossChainSwap(
         savingToken,
-        usdc,
+        stableCoin,
         amountToSave
       );
     }
@@ -150,7 +150,7 @@ contract Bitsave {
     if (isSafeMode) {
       savingPlusAmount = crossChainSwap(
         userChildContract.getSavingTokenId(nameOfSavings),
-        usdc,
+        stableCoin,
         savingPlusAmount
       );
     }
