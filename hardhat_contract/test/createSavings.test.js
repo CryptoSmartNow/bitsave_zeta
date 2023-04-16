@@ -16,6 +16,8 @@ describe("Create savings", ()=>{
 
     it("Should revert if saving name has been used")
 
+    it("Should revert savings that exclude maturity time")
+
     it("Should create savings", async()=>{
         const {bitsave} = await loadFixture(deployBitsaveFixture);
         const bsChildContract = await bitsave.getUserChildContractAddress();
