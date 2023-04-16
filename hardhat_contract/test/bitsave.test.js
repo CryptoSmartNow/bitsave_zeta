@@ -67,6 +67,19 @@ describe("Bitsave protocol", ()=>{
     })
 
     describe("Saving features", ()=>{
-        
+        describe("Create savings", ()=>{
+            it("Should revert if user is not registered", async()=>{
+                const {bitsave, otherAccount} = await loadFixture(deployBitsaveFixture);
+
+                expect(
+                    bitsave.connect(otherAccount).createSaving()
+                ).to.be.revertedWith("User not registered to bitsave!");
+            })
+            it("Should create savings", async()=>{
+                const {bitsave} = await loadFixture(deployBitsaveFixture);
+
+                //
+            })
+        })
     })
 })
