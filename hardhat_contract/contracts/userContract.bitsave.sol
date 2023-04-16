@@ -9,6 +9,7 @@ contract UserContract {
 
     // structure of saving data
     struct SavingDataStruct {
+        bool isValid;
         uint256 amount;
         address tokenId;
         uint256 interestAccumulated;
@@ -48,7 +49,7 @@ contract UserContract {
     ) public payable bitsaveOnly returns (uint) {
         uint startTime = block.timestamp;
         // ensure saving does not exist; ! todo: this wont work
-        require(savings[name].maturityTime > 0, "Savings exist already");
+        require(!savings[name].isValid, "Savings exist already");
         // check if end time valid
         require(maturityTime > startTime, "Maturity time of saving must be in the future!");
 
@@ -62,7 +63,8 @@ contract UserContract {
             startTime : startTime,
             tokenId : tokenId,
             penaltyPercentage : penaltyPercentage,
-            isSafeMode : isSafeMode
+            isSafeMode : isSafeMode,
+            isValid : true
         });
 
         // store saving to map of savings
@@ -74,7 +76,7 @@ contract UserContract {
     // returns: uint interest accumulated
     function addToSavings (string memory name) public payable bitsaveOnly returns (uint) {
         SavingDataStruct storage toFundSavings = savings[name];
-        require(toFundSavings != 0, "Saving to fund does not exist");
+        require(toFundSavings.isValid, "Saving to fund does not exist");
         require(block.timestamp > toFundSavings.maturityTime, "Sorry, saving has ended");
 
         // calculate new interest
@@ -90,7 +92,7 @@ contract UserContract {
     function withdrawSavings (string memory name) public payable bitsaveOnly returns (string memory) {
         SavingDataStruct storage toWithdrawSavings = savings[name];
         // check if saving exit
-        require(toWithdrawSavings != 0, "Saving to withdraw does not exist");
+        require(toWithdrawSavings.isValid, "Saving to withdraw does not exist");
         uint amountToWithdraw;
         // check if saving is mature
         if (block.timestamp < toWithdrawSavings.maturityTime) {

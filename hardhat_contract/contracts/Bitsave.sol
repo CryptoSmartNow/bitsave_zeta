@@ -28,7 +28,7 @@ contract Bitsave {
   // ********++++++ Security +++++++********
 
   modifier registeredOnly {
-    require(addressToUserBS[msg.sender] != 0, "User not registered to bitsave!");
+    require(addressToUserBS[msg.sender] != address(0x0), "User not registered to bitsave!");
     _;
   }
 
@@ -45,11 +45,11 @@ contract Bitsave {
     usdc = _usdc;
   }
 
-  function getSwapRouter() public returns(ISwapRouter swapRouter) {
+  function getSwapRouter() public returns(ISwapRouter) {
     return swapRouter;
   }
 
-  function getstableCoin() public returns(address usdc) {
+  function getstableCoin() public returns(address) {
     return usdc;
   }
 
@@ -63,7 +63,7 @@ contract Bitsave {
     TransferHelper.safeApprove(inputToken, address(swapRouter), amountToSwap);
     // convert the token to targetToken by deriving parameters
     ISwapRouter.ExactInputSingleParams memory params =
-    ISwapRouter.exactInputSingle({
+    ISwapRouter.ExactInputSingleParams({
       tokenIn: inputToken,
       tokenOut: targetToken,
       fee: poolFee,
@@ -82,7 +82,7 @@ contract Bitsave {
   function joinBitsave() public payable returns (address) {
     require(msg.value > 10000, "Incomplete bitsave fee"); // todo: encapsulate
     // deploy child contract for user
-    address userBSAddress = new UserContract{value: 1000}();
+    address userBSAddress = address(new UserContract{value: 1000}());
     addressToUserBS[msg.sender] = userBSAddress;
     return userBSAddress;
   }
@@ -134,7 +134,8 @@ contract Bitsave {
       nameOfSaving,
       maturityTime,
       penaltyPercentage,
-      savingToken
+      savingToken,
+      safeMode
     );
   }
 

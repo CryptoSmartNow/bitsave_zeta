@@ -77,8 +77,9 @@ describe("Bitsave protocol", ()=>{
             })
             it("Should create savings", async()=>{
                 const {bitsave} = await loadFixture(deployBitsaveFixture);
+                const bsChildContract = await bitsave.getUserChildContractAddress();
 
-                //
+                // todo: work on the data retrieval
             })
         })
     })
