@@ -47,4 +47,26 @@ describe("Bitsave protocol", ()=>{
             expect(await bitsave.getSwapRouter()).to.equal(swapRouter);
         })
     })
+
+    describe("Registration", ()=>{
+        it("should revert if fee is less than required", async()=>{
+            const {bitsave} = await loadFixture(deployBitsaveFixture);
+
+            expect(bitsave.joinBitsave({value: 7000})).to.be
+                .revertedWith("Incomplete bitsave fee");
+        })
+        it("Should create child contract and return the child address", async()=>{
+            const {bitsave} = await loadFixture(deployBitsaveFixture);
+
+            const childAddressFromJoining = await bitsave.joinBitsave({value: 10000});
+            expect(childAddressFromJoining).to.be.equal(anyValue());
+            expect(childAddressFromJoining).to.be.properAddress;
+            expect(await bitsave.getUserChildContractAddress()).to.be.equal(childAddressFromJoining);
+        })
+        // can make tests for child contract directly
+    })
+
+    describe("Saving features", ()=>{
+        
+    })
 })

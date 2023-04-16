@@ -79,11 +79,16 @@ contract Bitsave {
   }
 
   // the join bitsave functionality implementation, charges and co
-  function joinBitsave() public payable {
+  function joinBitsave() public payable returns (address) {
     require(msg.value > 10000, "Incomplete bitsave fee"); // todo: encapsulate
     // deploy child contract for user
     address userBSAddress = new UserContract{value: 1000}();
     addressToUserBS[msg.sender] = userBSAddress;
+    return userBSAddress;
+  }
+
+  function getUserChildContractAddress() public returns (address) {
+    return addressToUserBS[msg.sender];
   }
 
   // /*
