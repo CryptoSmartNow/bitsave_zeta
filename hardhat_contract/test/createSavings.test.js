@@ -2,8 +2,12 @@
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
 const {expect} = require("chai")
 const deployBitsaveFixture = require("./bitsave.test")
+const {USDC_ADDRESS, ONE_GWEI} = require("../constants/config");
 
 describe("Create savings", ()=>{
+    const twoPenaltyPercentage = 2;
+    const amountToSave = 3 * ONE_GWEI;
+
     it("Should revert if user is not registered", async()=>{
         const {bitsave, otherAccount} = await loadFixture(deployBitsaveFixture);
 
@@ -14,9 +18,23 @@ describe("Create savings", ()=>{
 
     it("Should revert if minimum savings not satisfied")
 
-    it("Should revert if saving name has been used")
+    it("Should revert savings that exclude or exceed maturity time", async()=>{
+        const {bitsave, registeredUser} = await loadFixture(deployBitsaveFixture)
 
-    it("Should revert savings that exclude maturity time")
+        const oldTimestamp = Math.round(Date.now() / 1000) - 1000;
+        await expect(
+            bitsave
+                .connect(registeredUser)
+                .createSaving(
+                    "school",
+                    oldTimestamp,
+                    twoPenaltyPercentage,
+                    false,
+                    USDC_ADDRESS,
+                    amountToSave
+                )
+        ).to.be.revertedWith("Maturity time exceeded/invalid");
+    })
 
     it("Should create savings", async()=>{
         const {bitsave} = await loadFixture(deployBitsaveFixture);
@@ -30,4 +48,6 @@ describe("Create savings", ()=>{
     it("Should increase balance of child contract by value")
 
     it("Should convert currency of saving for safe mode")
+
+    it("Should revert if saving name has been used")
 })

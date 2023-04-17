@@ -4,16 +4,15 @@ const {loadFixture, time} = require("@nomicfoundation/hardhat-network-helpers")
 const {anyValue} = require("@nomicfoundation/hardhat-chai-matchers/withArgs")
 const {expect} = require("chai")
 const {ethers} = require("hardhat");
-const {USDC_ADDRESS, ROUTERADDRESS} = require("../constants/config")
+const {USDC_ADDRESS, ROUTERADDRESS, ONE_GWEI} = require("../constants/config")
 
 async function deployBitsaveFixture() {
     // args
     const swapRouter = ROUTERADDRESS;
     const routerAddress = ROUTERADDRESS;
     const usdcAddress = USDC_ADDRESS;
-    const ONE_GWEI = 1_000_000_000;
 
-    const [owner, otherAccount] = await ethers.getSigners();
+    const [owner, toBeRegisteredAccount, otherAccount] = await ethers.getSigners();
 
     const Bitsave = await ethers.getContractFactory("Bitsave");
     const bitsave = await Bitsave.deploy(
@@ -25,12 +24,15 @@ async function deployBitsaveFixture() {
         }
     )
 
+    await bitsave.connect(toBeRegisteredAccount).joinBitsave({value: 10_000});
+
     return {
         bitsave,
         swapRouter,
         routerAddress,
         usdcAddress,
         owner,
+        registeredUser: toBeRegisteredAccount,
         otherAccount,
     }
 }
@@ -58,7 +60,7 @@ describe("Bitsave protocol", ()=>{
         it("should revert if fee is less than required", async()=>{
             const {bitsave} = await loadFixture(deployBitsaveFixture);
 
-            expect(bitsave.joinBitsave({value: 7000})).to.be
+            await expect(bitsave.joinBitsave({value: 7000})).to.be
                 .revertedWith("Incomplete bitsave fee");
         })
         it("Should create child contract and return the child address", async()=>{
@@ -66,7 +68,6 @@ describe("Bitsave protocol", ()=>{
 
             const childAddressFromJoining = await bitsave.joinBitsave({value: 10000});
             const childAddress = await bitsave.getUserChildContractAddress();
-            console.log(childAddress);
             expect(childAddress).to.be.properAddress;
         })
         // can make tests for child contract directly

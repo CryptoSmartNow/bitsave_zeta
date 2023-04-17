@@ -7,6 +7,7 @@ import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "./userContract.bitsave.sol";
 
+import "hardhat/console.sol";
 
 contract Bitsave {
   // *********++++++ Storage +++++++********
@@ -110,6 +111,9 @@ contract Bitsave {
     address tokenToSave, // todo: abstract away from code
     uint amountToSave // necessary if saving is not native token
   ) public payable registeredOnly {
+    console.log("blk: %o, mtr: %o", block.timestamp, maturityTime);
+
+    require(block.timestamp < maturityTime, "Maturity time exceeded/invalid");
 
     // first approve contract usage and remove of amount of token
 //    IERC20(tokenToSave).approve(address(this), amountToSave);
