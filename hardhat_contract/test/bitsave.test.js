@@ -25,6 +25,7 @@ async function deployBitsaveFixture() {
     )
 
     await bitsave.connect(toBeRegisteredAccount).joinBitsave({value: 10_000});
+    const reg_userChildAddress = await bitsave.getUserChildContractAddress();
 
     return {
         bitsave,
@@ -33,8 +34,14 @@ async function deployBitsaveFixture() {
         usdcAddress,
         owner,
         registeredUser: toBeRegisteredAccount,
+        reg_userChildAddress,
         otherAccount,
     }
+}
+
+const childContractGenerate = async (address) => {
+    const BitsaveChild = await ethers.getContractFactory("UserContract");
+    return BitsaveChild.attach(address);
 }
 
 // test features to be written here
@@ -49,7 +56,7 @@ describe("Bitsave protocol", ()=>{
         })
         it("Should set swapRouter correctly", async()=>{
             const {bitsave, swapRouter} = await loadFixture(deployBitsaveFixture);
-
+    
             expect(
                 (await bitsave.swapRouter()).toLowerCase()
             ).to.equal(swapRouter.toLowerCase());
@@ -71,6 +78,16 @@ describe("Bitsave protocol", ()=>{
             expect(childAddress).to.be.properAddress;
         })
         // can make tests for child contract directly
+        it("ChildContract: should set parent contract address as bitsave", async()=>{
+            const {registeredUser, reg_userChildAddress} = await loadFixture(deployBitsaveFixture)
+
+            const childContract = await childContractGenerate(reg_userChildAddress);
+            expect(
+                await childContract
+                    .connect(registeredUser)
+                    .bitsaveAddress()
+            ).to.be.properAddress // todo: make sure it's parent contract instead
+        })
     })
 
     describe("Saving features", ()=>{
@@ -80,4 +97,7 @@ describe("Bitsave protocol", ()=>{
     })
 })
 
-module.exports = deployBitsaveFixture
+module.exports = {
+    deployBitsaveFixture,
+    childContractGenerate
+}

@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >0.6.0;
+pragma abicoder v2;
+
+import "hardhat/console.sol";
 
 contract UserContract {
 
     // ****--------- DS for user saving contract -----------
-    address bitsaveAddress;
+    address public bitsaveAddress;
     address payable ownerAddress;
 
     // structure of saving data
@@ -38,6 +41,10 @@ contract UserContract {
         ownerAddress = msg.sender;
     }
 
+    function getSavings(string memory nameOfSaving) public view returns (SavingDataStruct memory) {
+        return savings[nameOfSaving];
+    }
+
     // functionality to create savings
     // returns: uint interest accumulated
     function createSavings (
@@ -56,7 +63,12 @@ contract UserContract {
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae
 
-        SavingDataStruct memory saving = SavingDataStruct({
+        console.log("interest: %o", accumulatedInterest);
+
+//        SavingDataStruct storage saving =
+
+        // store saving to map of savings
+        savings[name] = SavingDataStruct({
             amount : msg.value,
             maturityTime : maturityTime,
             interestAccumulated : accumulatedInterest,
@@ -66,10 +78,7 @@ contract UserContract {
             isSafeMode : isSafeMode,
             isValid : true
         });
-
-        // store saving to map of savings
-        savings[name] = saving;
-        return saving.interestAccumulated;
+        return 1;
     }
 
     // functionality to add to savings
@@ -113,11 +122,11 @@ contract UserContract {
     }
 
     // Contract Getters
-    function getSavingMode(string memory nameOfSaving) external returns (bool) {
+    function getSavingMode(string memory nameOfSaving) view external returns (bool) {
         return savings[nameOfSaving].isSafeMode;
     }
 
-    function getSavingTokenId(string memory nameOfSaving) external returns (address) {
+    function getSavingTokenId(string memory nameOfSaving) view external returns (address) {
         return savings[nameOfSaving].tokenId;
     }
 

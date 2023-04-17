@@ -1,7 +1,7 @@
 
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
 const {expect} = require("chai")
-const deployBitsaveFixture = require("./bitsave.test")
+const {deployBitsaveFixture} = require("./bitsave.test")
 
 describe("Withdraw saving", ()=>{
     it("Should revert if not registered")

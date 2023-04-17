@@ -7,7 +7,7 @@ import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "./userContract.bitsave.sol";
 
-//import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 contract Bitsave {
   // *********++++++ Storage +++++++********
@@ -46,11 +46,11 @@ contract Bitsave {
     stableCoin = _stableCoin;
   }
 
-  function getSwapRouter() public returns(ISwapRouter) {
+  function getSwapRouter() public view returns(ISwapRouter) {
     return swapRouter;
   }
 
-  function getStableCoin() public returns(address) {
+  function getStableCoin() public view returns(address) {
     return stableCoin;
   }
 
@@ -132,7 +132,7 @@ contract Bitsave {
     userChildContract = UserContract(addressToUserBS[msg.sender]);
     // todo: pay txn
     // call create savings for child contract
-    userChildContract.createSavings{value: amountToSave}(
+    userChildContract.createSavings{value: amountOfWeiSent}(
       nameOfSaving,
       maturityTime,
       penaltyPercentage,

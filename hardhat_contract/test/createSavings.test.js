@@ -1,12 +1,13 @@
 
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
 const {expect} = require("chai")
-const deployBitsaveFixture = require("./bitsave.test")
+const {deployBitsaveFixture, childContractGenerate} = require("./bitsave.test")
 const {USDC_ADDRESS, ONE_GWEI} = require("../constants/config");
 
 describe("Create savings", ()=>{
     const twoPenaltyPercentage = 2;
     const amountToSave = 3 * ONE_GWEI;
+    const newTimestamp = Date.now() + 300_000;
 
     it("Should revert if user is not registered", async()=>{
         const {bitsave, otherAccount} = await loadFixture(deployBitsaveFixture);
@@ -37,8 +38,24 @@ describe("Create savings", ()=>{
     })
 
     it("Should create savings", async()=>{
-        const {bitsave} = await loadFixture(deployBitsaveFixture);
-        const bsChildContract = await bitsave.getUserChildContractAddress();
+        const {bitsave, registeredUser} = await loadFixture(deployBitsaveFixture);
+        const nameOfSaving = "school"
+
+        await bitsave
+                .connect(registeredUser)
+                .createSaving(
+                    nameOfSaving,
+                    newTimestamp,
+                    twoPenaltyPercentage,
+                    false,
+                    USDC_ADDRESS,
+                    amountToSave
+                )
+
+        const bsChildContractAddress = await bitsave.getUserChildContractAddress();
+        const userChildContract = await childContractGenerate(bsChildContractAddress);
+
+        console.log(await userChildContract.getSavings(nameOfSaving));
 
         // todo: work on the data retrieval
     })
