@@ -38,7 +38,7 @@ describe("Create savings", ()=>{
     })
 
     it("Should create savings", async()=>{
-        const {bitsave, registeredUser} = await loadFixture(deployBitsaveFixture);
+        const {bitsave, registeredUser, reg_userChildAddress} = await loadFixture(deployBitsaveFixture);
         const nameOfSaving = "school"
 
         await bitsave
@@ -52,8 +52,7 @@ describe("Create savings", ()=>{
                     amountToSave
                 )
 
-        const bsChildContractAddress = await bitsave.getUserChildContractAddress();
-        const userChildContract = await childContractGenerate(bsChildContractAddress);
+        const userChildContract = await childContractGenerate(reg_userChildAddress);
 
         console.log(await userChildContract.getSavings(nameOfSaving));
 

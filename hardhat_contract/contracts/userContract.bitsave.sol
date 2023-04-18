@@ -63,8 +63,6 @@ contract UserContract {
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae
 
-        console.log("interest: %o", accumulatedInterest);
-
 //        SavingDataStruct storage saving =
 
         // store saving to map of savings
