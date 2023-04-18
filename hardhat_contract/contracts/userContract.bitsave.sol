@@ -63,7 +63,7 @@ contract UserContract {
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae
 
-//        SavingDataStruct storage saving =
+//        SavingDataStruct storage saving
 
         // store saving to map of savings
         savings[name] = SavingDataStruct({
