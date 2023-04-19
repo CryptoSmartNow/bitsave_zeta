@@ -6,6 +6,7 @@ const {deployBitsaveFixture, childContractGenerate} = require("./bitsave.test")
 const {USDC_ADDRESS, ONE_GWEI} = require("../constants/config");
 
 describe("Create savings", async()=>{
+    const nameOfSaving = "school"
     const twoPenaltyPercentage = 2;
     const amountToSave = 3 * ONE_GWEI;
     const newTimestamp = Date.now() + 300_000;
@@ -73,7 +74,7 @@ describe("Create savings", async()=>{
         const {bitsave, registeredUser} = await loadFixture(deployBitsaveFixture)
 
         const userBalanceBeforeSaving = await registeredUser.getBalance()
-        const nameOfSaving = "school"
+
         const useSafeMode = false;
         // save amount
         await bitsave
@@ -98,5 +99,33 @@ describe("Create savings", async()=>{
 
     it("Should convert currency of saving for safe mode")
 
-    it("Should revert if saving name has been used")
+    it("Should revert if saving name has been used", async()=>{
+        const {bitsave, registeredUser} = await loadFixture(deployBitsaveFixture);
+
+        await bitsave
+            .connect(registeredUser)
+            .createSaving(
+                nameOfSaving,
+                newTimestamp,
+                twoPenaltyPercentage,
+                false,
+                USDC_ADDRESS,
+                amountToSave
+            );
+
+        await expect(
+            bitsave
+            .connect(registeredUser)
+            .createSaving(
+                nameOfSaving,
+                newTimestamp,
+                twoPenaltyPercentage,
+                false,
+                USDC_ADDRESS,
+                amountToSave
+            )
+        ).to.be.revertedWith(
+            "Savings exist already"
+        )
+    })
 })
