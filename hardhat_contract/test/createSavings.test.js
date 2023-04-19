@@ -125,7 +125,7 @@ describe("Create savings", async()=>{
                 amountToSave
             )
         ).to.be.revertedWith(
-            "Savings exist already"
+            "Saving exists already"
         )
     })
 })
