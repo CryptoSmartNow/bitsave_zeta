@@ -54,6 +54,16 @@ contract Bitsave {
     return stableCoin;
   }
 
+  function retrieveAmount(
+    address tokenToRetrieve,
+    uint amountToRetrieve
+  ) internal {
+    // approve amount from user
+    IERC20(tokenToRetrieve).approve(msg.sender, amountToRetrieve);
+    // retrieveAmount from sender
+    IERC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
+  }
+
   function crossChainSwap (
     address inputToken,
     address targetToken,
@@ -88,8 +98,7 @@ contract Bitsave {
     // check amount sent
     require(amount > poolFee, "Amount to convert not enough");
     // retrieve stable coin used from owner address
-    IERC20(stableCoin).approve(address(this), amount);
-    IERC20(stableCoin).transferFrom(msg.sender, address(this), amount);
+    retrieveAmount(stableCoin, amount);
     // convert to original token using crossChainSwap()
     crossChainSwap(stableCoin, originalToken, amount);
     // send to owner address directly
@@ -130,10 +139,9 @@ contract Bitsave {
   ) public payable registeredOnly {
     require(block.timestamp < maturityTime, "Maturity time exceeded/invalid");
 
-    // first approve contract usage and remove of amount of token
-    ZERC20(tokenToSave).approve(address(this), amountToSave);
-    ZERC20(tokenToSave).transferFrom(msg.sender, address(this), amountToSave);
-    // ? if to save native token, need to send instead
+    // using utility fn to transfer token from user
+    retrieveAmount(tokenToSave, amountToSave);
+    // ? if to save native token, need to send instead todo
 
     address savingToken;
     uint amountOfWeiSent = msg.value;
@@ -166,6 +174,7 @@ contract Bitsave {
   //  */
   function incrementSaving(string memory nameOfSavings) public payable registeredOnly {
     // todo: handle saving in token
+    retrieveAmount(); // todo: structure this function
     // initialize userChildContract
     userChildContract = UserContract(addressToUserBS[msg.sender]);
     // todo: perform amount conversion and everything
