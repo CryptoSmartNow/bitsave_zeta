@@ -56,7 +56,7 @@ contract UserContract {
     ) public payable bitsaveOnly returns (uint) {
         uint startTime = block.timestamp;
         // ensure saving does not exist; ! todo: this wont work
-        require(!savings[name].isValid, "Saving exist already");
+        require(!savings[name].isValid, "Saving exists already");
         // check if end time valid
         require(maturityTime > startTime, "Maturity time of saving must be in the future!");
 
@@ -81,7 +81,7 @@ contract UserContract {
 
     // functionality to add to savings
     // returns: uint interest accumulated
-    function addToSavings (string memory name) public payable bitsaveOnly returns (uint) {
+    function incrementSaving (string memory name) public payable bitsaveOnly returns (uint) {
         SavingDataStruct storage toFundSavings = savings[name];
         require(toFundSavings.isValid, "Saving to fund does not exist");
         require(block.timestamp > toFundSavings.maturityTime, "Sorry, saving has ended");

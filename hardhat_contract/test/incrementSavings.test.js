@@ -1,10 +1,22 @@
 
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
 const {expect} = require("chai")
-const deployBitsaveFixture = require("./bitsave.test")
+const {deployBitsaveFixture} = require("./bitsave.test")
 
 describe("Increment savings", ()=>{
-    it("Should revert if user not registered")
+    it("Should revert if user not registered", async ()=>{
+        const {bitsave, otherAccount} = await loadFixture(deployBitsaveFixture)
+
+        await expect(
+            bitsave
+                .connect(otherAccount)
+                .incrementSaving(
+                    "school"
+                )
+        ).to.be.revertedWith(
+            "User not registered to bitsave!"
+        )
+    })
 
     it("Should revert if saving to increment not present")
 
