@@ -91,7 +91,6 @@ contract Bitsave {
 
   function sendAsOriginalToken(
     address originalToken,
-    address stableCoin,
     uint amount,
     address ownerAddress
   ) public payable {

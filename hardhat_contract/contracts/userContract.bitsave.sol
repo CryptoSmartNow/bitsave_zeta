@@ -3,6 +3,7 @@ pragma solidity >0.6.0;
 pragma abicoder v2;
 
 import "hardhat/console.sol";
+import "./Bitsave.sol";
 
 contract UserContract {
 
@@ -122,6 +123,12 @@ contract UserContract {
         ownerAddress.transfer(amountToWithdraw); // todo: use this only for native saving
         if (toWithdrawSavings.isSafeMode) {
             // call parent for conversion
+            Bitsave
+                .sendAsOriginalToken(
+                    toWithdrawSavings.tokenId,
+                    amountToWithdraw,
+                    ownerAddress
+                );
         }else {
             transferToken(
                 toWithdrawSavings.tokenId,
