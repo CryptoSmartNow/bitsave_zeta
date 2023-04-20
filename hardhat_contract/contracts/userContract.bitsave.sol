@@ -96,7 +96,7 @@ contract UserContract {
         return toFundSavings.interestAccumulated;
     }
 
-    function withdrawSavings (string memory name) public payable bitsaveOnly returns (string memory) {
+    function withdrawSaving (string memory name) public payable bitsaveOnly returns (string memory) {
         SavingDataStruct storage toWithdrawSavings = savings[name];
         // check if saving exit
         require(toWithdrawSavings.isValid, "Saving to withdraw does not exist");

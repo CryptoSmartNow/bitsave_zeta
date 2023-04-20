@@ -141,6 +141,12 @@ contract Bitsave {
     );
   }
 
+  //  /*
+  //  @payable
+  //    the amount to add to saving
+  //  @param:
+  //    string nameOfSaving
+  //  */
   function incrementSaving(string memory nameOfSavings) public payable registeredOnly {
     // todo: handle saving in token
     // initialize userChildContract
@@ -160,13 +166,17 @@ contract Bitsave {
     userChildContract.incrementSaving{value: savingPlusAmount}(nameOfSavings);
   }
 
-  function withdrawSavings(
+  //
+  // @param:
+  //    string nameOfSaving
+  //
+  function withdrawSaving(
     string memory nameOfSavings
   ) public registeredOnly returns (bool) {
     // initialize user's child userChildContract
     userChildContract = UserContract(addressToUserBS[msg.sender]);
     // call withdraw savings fn
-    userChildContract.withdrawSavings(nameOfSavings);
+    userChildContract.withdrawSaving(nameOfSavings);
     return true;
   }
 

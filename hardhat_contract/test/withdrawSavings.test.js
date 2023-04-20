@@ -4,9 +4,30 @@ const {expect} = require("chai")
 const {deployBitsaveFixture} = require("./bitsave.test")
 
 describe("Withdraw saving", ()=>{
-    it("Should revert if not registered")
+    it("Should only allow bitsave protocol on child contract")
 
-    it("Should revert if saving to withdraw not present")
+    it("Should revert if not registered", async()=>{
+        const {bitsave, otherAccount} = await loadFixture(deployBitsaveFixture)
+        await expect(
+            bitsave
+                .connect(otherAccount)
+                .withdrawSaving("school")
+        ).to.be.revertedWith(
+            "User not registered to bitsave!"
+        )
+    })
+
+    it("Should revert if saving to withdraw not present", async()=>{
+        const {bitsave, registeredUser} = await loadFixture(deployBitsaveFixture);
+
+        await expect(
+            bitsave
+                .connect(registeredUser)
+                .withdrawSaving("unknown saving")
+        ).to.be.revertedWith(
+            "Saving to withdraw does not exist"
+        )
+    })
 
     describe("Breaking saving", ()=>{
         it("Should remove penalty from saving")
