@@ -134,16 +134,20 @@ contract Bitsave {
     // safe/risk mode
     bool safeMode,
     address tokenToSave, // todo: abstract away from code
-    uint amountToSave // necessary if saving is not native token
+    uint amount // necessary if saving is not native token
   ) public payable registeredOnly {
     require(block.timestamp < maturityTime, "Maturity time exceeded/invalid");
 
-    // using utility fn to transfer token from user
-    retrieveAmount(tokenToSave, amountToSave);
-    // ? if to save native token, need to send instead todo
-
     address savingToken;
-    uint amountOfWeiSent = msg.value;
+    uint amountOfWeiSent;
+    // check if saving in native token
+    if(tokenToSave == address(0)) {
+      amountToSave = msg.value;
+    }else {
+      amountToSave = amount;
+      // using utility fn to transfer token from user
+      retrieveAmount(tokenToSave, amountToSave);
+    }
     // functionality for creating savings
     if (safeMode) {
       amountToSave = crossChainSwap(
@@ -156,7 +160,7 @@ contract Bitsave {
     userChildContract = UserContract(addressToUserBS[msg.sender]);
     // todo: pay txn
     // call create savings for child contract
-    userChildContract.createSavings{value: amountOfWeiSent}(
+    userChildContract.createSaving{value: amountOfWeiSent}(
       nameOfSaving,
       maturityTime,
       penaltyPercentage,

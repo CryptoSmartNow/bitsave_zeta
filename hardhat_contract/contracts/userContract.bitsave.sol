@@ -54,7 +54,7 @@ contract UserContract {
 
     // functionality to create savings
     // returns: uint interest accumulated
-    function createSavings (
+    function createSaving (
         string memory name,
         uint256 maturityTime,
         uint8 penaltyPercentage,
