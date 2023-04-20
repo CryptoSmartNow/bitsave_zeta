@@ -1,8 +1,25 @@
-# Sample Hardhat Project
+# Bitsave-Zetachain
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+This is the bitsave protocol to be deployed
+on the zetachain using `zEVM`. 
 
-Try running some of the following tasks:
+### Prerequisite:
+- Node.js
+- Hardhat
+- Project requirement
+`npm install`
+
+## Usage:
+The details of flow is in 
+**flow.txt**
+
+- The tests are written in the test directory, run them by
+```bash
+cd hardhat_contract
+npx hardhat test
+```
+
+- To deploy: `coming soon`
 
 ```shell
 npx hardhat help
