@@ -79,6 +79,23 @@ contract Bitsave {
     return amountSwapped;
   }
 
+  function sendAsOriginalToken(
+    address originalToken,
+    address stableCoin,
+    uint amount,
+    address ownerAddress
+  ) public payable {
+    // check amount sent
+    require(amount > poolFee, "Amount to convert not enough");
+    // retrieve stable coin used from owner address
+    IERC20(stableCoin).approve(address(this), amount);
+    IERC20(stableCoin).transferFrom(msg.sender, address(this), amount);
+    // convert to original token using crossChainSwap()
+    crossChainSwap(stableCoin, originalToken, amount);
+    // send to owner address directly
+    IERC20(originalToken).transfer(ownerAddress, amount);
+  }
+
   // the join bitsave functionality implementation, charges and co
   function joinBitsave() public payable returns (address) {
     require(msg.value >= 10000, "Incomplete bitsave fee"); // todo: encapsulate
@@ -114,8 +131,8 @@ contract Bitsave {
     require(block.timestamp < maturityTime, "Maturity time exceeded/invalid");
 
     // first approve contract usage and remove of amount of token
-//    IERC20(tokenToSave).approve(address(this), amountToSave);
-//    IERC20(tokenToSave).transferFrom(msg.sender, address(this), amountToSave);
+    ZERC20(tokenToSave).approve(address(this), amountToSave);
+    ZERC20(tokenToSave).transferFrom(msg.sender, address(this), amountToSave);
     // ? if to save native token, need to send instead
 
     address savingToken;
