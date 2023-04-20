@@ -115,7 +115,8 @@ contract UserContract {
         address tokenId = toWithdrawSavings.tokenId;
         ownerAddress.transfer(amountToWithdraw);
         // Delete savings; todo: ensure saving is deleted
-        delete savings[name];
+        savings[name].isValid = false;
+        delete savings[name]; // todo: can't delete so make invalid
         return "savings withdrawn successfully";
     }
 
