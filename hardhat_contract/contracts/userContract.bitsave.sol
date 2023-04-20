@@ -41,6 +41,12 @@ contract UserContract {
         ownerAddress = msg.sender;
     }
 
+    function transferToken(
+        address token,
+        address recipient, uint amount) internal {
+        IERC20(token).transfer(recipient, amount);
+    }
+
     function getSavings(string memory nameOfSaving) public view returns (SavingDataStruct memory) {
         return savings[nameOfSaving];
     }
@@ -113,7 +119,16 @@ contract UserContract {
 
         // send the savings amount to withdraw
         address tokenId = toWithdrawSavings.tokenId;
-        ownerAddress.transfer(amountToWithdraw);
+        ownerAddress.transfer(amountToWithdraw); // todo: use this only for native saving
+        if (toWithdrawSavings.isSafeMode) {
+            // call parent for conversion
+        }else {
+            transferToken(
+                toWithdrawSavings.tokenId,
+                ownerAddress,
+                amountToWithdraw
+            );
+        }
         // Delete savings; todo: ensure saving is deleted
         savings[name].isValid = false;
         delete savings[name]; // todo: can't delete so make invalid
