@@ -4,7 +4,7 @@
   "description": "Bitsave protocol written and deployed to the zeta blockchain",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx hardhat test"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
     "hardhat": "^2.13.1"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^4.8.3",
     "@uniswap/v3-core": "^1.0.1",
     "@uniswap/v3-periphery": "^1.4.3",
     "web3": "^1.9.0"
