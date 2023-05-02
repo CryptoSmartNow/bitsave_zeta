@@ -24,6 +24,14 @@
   },
   "homepage": "https://github.com/CryptoSmartNow/bitsave_zeta#readme",
   "devDependencies": {
+    "@uniswap/v2-core": "^1.0.1",
+    "@uniswap/v2-periphery": "^1.1.0-beta.0",
+    "@zetachain/addresses-tools": "^0.0.7",
+    "@zetachain/zevm-example-contracts": "^0.0.1",
+    "@zetachain/zevm-protocol-contracts": "^0.0.1",
+    "axios": "^1.4.0",
+    "dotenv": "^16.0.3",
+    "envfile": "^6.18.0",
     "hardhat": "^2.13.1"
   },
   "dependencies": {

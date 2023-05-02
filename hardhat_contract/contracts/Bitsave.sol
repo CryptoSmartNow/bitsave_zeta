@@ -9,6 +9,24 @@ import "./userContract.bitsave.sol";
 
 import "hardhat/console.sol";
 
+// Zetaprotocols
+import "@zetachain/zevm-protocol-contracts/contracts/interfaces/IZRC20.sol";
+import "@zetachain/zevm-protocol-contracts/contracts/system/SystemContract.sol";
+import "@zetachain/zevm-protocol-contracts/contracts/interfaces/zContract.sol";
+
+import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
+
+// Make interface work with zContract
+// Use the swap SwapHelperLib
+// Employ the interface for ZRC 
+// Introduce the swap into userChildContract
+// Complete the swap from child contract 
+// Finish the functionality with swap
+// Try testing
+// Deploy and Finish
+// May the forces be with you
+
+
 contract Bitsave {
   // *********++++++ Storage +++++++********
 
