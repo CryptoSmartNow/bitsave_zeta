@@ -5,6 +5,13 @@ pragma abicoder v2;
 import "hardhat/console.sol";
 import "./Bitsave.sol";
 
+// Zetaprotocols
+import "@zetachain/zevm-protocol-contracts/contracts/interfaces/IZRC20.sol";
+import "@zetachain/zevm-protocol-contracts/contracts/system/SystemContract.sol";
+import "@zetachain/zevm-protocol-contracts/contracts/interfaces/zContract.sol";
+
+import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
+
 contract UserContract {
 
     // ****--------- DS for user saving contract -----------
@@ -48,6 +55,14 @@ contract UserContract {
         IERC20(token).transfer(recipient, amount);
     }
 
+    function retrieveToken(
+        address toRetrieveFrom,
+        address tokenToRetrieve,
+        uint amount
+    ) internal IZRC20(tokenToRetrieve).approve(toRetrieveFrom, amount);
+        IZRC20(tokenToRetrieve).withdraw(address(this), amount);
+    }
+
     function getSavings(string memory nameOfSaving) public view returns (SavingDataStruct memory) {
         return savings[nameOfSaving];
     }
@@ -69,6 +84,8 @@ contract UserContract {
 
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae
+
+        // retrieve token from parent contract
 
 //        SavingDataStruct storage saving
 

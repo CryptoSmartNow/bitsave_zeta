@@ -88,10 +88,12 @@ contract Bitsave is zContract {
     address tokenToRetrieve,
     uint amountToRetrieve
   ) internal {
-    // approve amount from user
-    IERC20(tokenToRetrieve).approve(msg.sender, amountToRetrieve);
-    // retrieveAmount from sender
-    IERC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
+    // -------approve amount from user
+//    IERC20(tokenToRetrieve).approve(msg.sender, amountToRetrieve);
+    IZRC20(tokenToRetrieve).approve(msg.sender, amountToRetrieve);
+    // -------retrieveAmount from sender
+//    IERC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
+    IZRC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
   }
 
   function onCrossChainCall (){}
@@ -133,7 +135,8 @@ contract Bitsave is zContract {
     // convert to original token using crossChainSwap()
     crossChainSwap(stableCoin, originalToken, amount);
     // send to owner address directly
-    IERC20(originalToken).transfer(ownerAddress, amount);
+//    IERC20(originalToken).transfer(ownerAddress, amount);
+    IZRC20(originalToken).transfer(ownerAddress, amount);
   }
 
   // the join bitsave functionality implementation, charges and co
@@ -171,7 +174,8 @@ contract Bitsave is zContract {
     require(block.timestamp < maturityTime, "Maturity time exceeded/invalid");
 
     address savingToken;
-    uint amountOfWeiSent;
+//    uint amountOfWeiSent;
+    uint amountToSave;
     // check if saving in native token
     if(tokenToSave == address(0)) {
       amountToSave = msg.value;
@@ -189,8 +193,9 @@ contract Bitsave is zContract {
       );
     }
     // Initialize user child contract
-    userChildContract = UserContract(addressToUserBS[msg.sender]);
-    // todo: pay txn
+    address userChildContractAddress = getUserChildContractAddress();
+    userChildContract = UserContract(userChildContractAddress);
+
     // call create savings for child contract
     userChildContract.createSaving{value: amountOfWeiSent}(
       nameOfSaving,
