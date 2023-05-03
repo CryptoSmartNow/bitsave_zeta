@@ -98,6 +98,7 @@ contract Bitsave is zContract {
 
   function onCrossChainCall (){}
 
+  // todo: converting this function using the zeta helper module
   function crossChainSwap (
     address inputToken,
     address targetToken,

@@ -52,14 +52,16 @@ contract UserContract {
     function transferToken(
         address token,
         address recipient, uint amount) internal {
-        IERC20(token).transfer(recipient, amount);
+//        IERC20(token).transfer(recipient, amount);
+        IZRC20(token).transfer(recipient, amount);
     }
 
     function retrieveToken(
         address toRetrieveFrom,
         address tokenToRetrieve,
         uint amount
-    ) internal IZRC20(tokenToRetrieve).approve(toRetrieveFrom, amount);
+    ) internal {
+        IZRC20(tokenToRetrieve).approve(toRetrieveFrom, amount);
         IZRC20(tokenToRetrieve).withdraw(address(this), amount);
     }
 
