@@ -27,11 +27,17 @@ import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
 // May the forces be with you
 
 
-contract Bitsave {
+contract Bitsave is zContract {
+
+  // Errors
+  error WrongGasContract();
+  error NotEnoughToPayGasFee();
+
   // *********++++++ Storage +++++++********
 
   // ****Contract params****
   // router02 address
+  SystemContract public immutable systemContract;
   address public router02;
   address public stableCoin;
   ISwapRouter public immutable swapRouter;
@@ -57,11 +63,17 @@ contract Bitsave {
   UserContract userChildContract;
   // ********++++++ Subcontract ++++********
 
-  constructor(ISwapRouter _swapRouter, address _router02, address _stableCoin) payable {
+  constructor(
+    ISwapRouter _swapRouter,
+    address _router02,
+    address _stableCoin,
+    address systemContractAddress
+  ) payable {
     // All constructor functions
     swapRouter = _swapRouter;
     router02 = _router02;
     stableCoin = _stableCoin;
+    systemContract = SystemContract(systemContractAddress);
   }
 
   function getSwapRouter() public view returns(ISwapRouter) {
@@ -81,6 +93,8 @@ contract Bitsave {
     // retrieveAmount from sender
     IERC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
   }
+
+  function onCrossChainCall (){}
 
   function crossChainSwap (
     address inputToken,
