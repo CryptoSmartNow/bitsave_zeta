@@ -96,7 +96,7 @@ contract Bitsave is zContract {
     IZRC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
   }
 
-  function onCrossChainCall (){}
+  function onCrossChainCall () external{}
 
   // todo: converting this function using the zeta helper module
   function crossChainSwap (
@@ -198,7 +198,7 @@ contract Bitsave is zContract {
     userChildContract = UserContract(userChildContractAddress);
 
     // call create savings for child contract
-    userChildContract.createSaving{value: amountOfWeiSent}(
+    userChildContract.createSaving{value: amountToSave}(
       nameOfSaving,
       maturityTime,
       penaltyPercentage,

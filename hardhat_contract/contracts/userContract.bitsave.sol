@@ -61,8 +61,9 @@ contract UserContract {
         address tokenToRetrieve,
         uint amount
     ) internal {
+        address thisAddress = address(this);
         IZRC20(tokenToRetrieve).approve(toRetrieveFrom, amount);
-        IZRC20(tokenToRetrieve).withdraw(address(this), amount);
+        IZRC20(tokenToRetrieve).withdraw(, amount);
     }
 
     function getSavings(string memory nameOfSaving) public view returns (SavingDataStruct memory) {
@@ -142,7 +143,8 @@ contract UserContract {
         ownerAddress.transfer(amountToWithdraw); // todo: use this only for native saving
         if (toWithdrawSavings.isSafeMode) {
             // call parent for conversion
-            Bitsave
+            Bitsave bitsave = Bitsave(bitsaveAddress);
+            bitsave
                 .sendAsOriginalToken(
                     toWithdrawSavings.tokenId,
                     amountToWithdraw,
