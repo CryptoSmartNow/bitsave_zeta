@@ -96,6 +96,20 @@ contract Bitsave is zContract {
     IZRC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
   }
 
+
+  // Message definition
+  // Address incoming
+  // Amount sent of token
+  // Encoded message:
+  // - Opcode 
+  // - Saving data per Opcode 
+  // - Token data
+  //  Opcodes:
+  //    CRT -> Create a saving
+  //    INC -> Increment a saving
+  //    WTD -> Withdraw a saving
+  //
+
   // todo: contract route definition
   function onCrossChainCall (
     address zrc20,
@@ -111,6 +125,8 @@ contract Bitsave is zContract {
     address targetToken,
     uint amountToSwap
   ) internal returns (uint){
+    // todo: use the SwapHelperLib for this instead
+
     // receive the amount to swap
     // Approve the router to spend the inputToken
     TransferHelper.safeApprove(inputToken, address(swapRouter), amountToSwap);
