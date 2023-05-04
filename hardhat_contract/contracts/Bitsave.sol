@@ -96,20 +96,19 @@ contract Bitsave is zContract {
     IZRC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
   }
 
-
-  // Message definition
-  // Address incoming
-  // Amount sent of token
-  // Encoded message:
-  // - Opcode 
-  // - Saving data per Opcode 
-  // - Token data
-  //  Opcodes:
-  //    CRT -> Create a saving
-  //    INC -> Increment a saving
-  //    WTD -> Withdraw a saving
   //
-
+  // Message definition
+  //  Address incoming
+  //  Amount sent of token
+  //  Encoded message:
+  //  - Opcode 
+  //  - Saving data per Opcode 
+  //  - Token data
+  //    Opcodes:
+  //      CRT -> Create a saving
+  //      INC -> Increment a saving
+  //      WTD -> Withdraw a saving
+  //
   // todo: contract route definition
   function onCrossChainCall (
     address zrc20,
