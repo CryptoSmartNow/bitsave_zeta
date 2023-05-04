@@ -96,6 +96,7 @@ contract Bitsave is zContract {
     IZRC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
   }
 
+  // todo: contract route definition
   function onCrossChainCall (
     address zrc20,
     uint256 amount,
