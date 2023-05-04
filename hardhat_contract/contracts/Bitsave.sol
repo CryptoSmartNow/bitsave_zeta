@@ -96,7 +96,13 @@ contract Bitsave is zContract {
     IZRC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
   }
 
-  function onCrossChainCall () external{}
+  function onCrossChainCall (
+    address zrc20,
+    uint256 amount,
+    bytes calldata message
+  ) external{
+    () = abi.decode(message);
+  }
 
   // todo: converting this function using the zeta helper module
   function crossChainSwap (
