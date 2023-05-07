@@ -123,11 +123,19 @@ contract Bitsave is zContract {
     (
       byte Opcode,
       // saving data,
+      string calldata nameOfSaving,
+      uint256 maturityTime,
+      uint8 penaltyPercentage,
+      bool safeMode
       // token data
     ) = abi.decode(
       message,
       (
-        byte
+        byte,
+        string,
+        uint256,
+        uint8,
+        bool
       )
     );
     
