@@ -133,7 +133,7 @@ contract Bitsave is zContract {
     
     if (Opcode == CRT) {
       // Call create functionality
-    }elif (Opcode == INC) {
+    }else if (Opcode == INC) {
       // Call incrementSaving functionality
     }else {
       // Call the withdraw functionality
