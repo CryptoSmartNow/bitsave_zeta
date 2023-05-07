@@ -138,13 +138,27 @@ contract Bitsave is zContract {
         bool
       )
     );
+
+    // todo: get the token data from msg.value
     
     if (Opcode == CRT) {
       // Call create functionality
+      createSaving(
+        nameOfSaving,
+        maturityTime,
+        penaltyPercentage,
+        safeMode
+      );
     }else if (Opcode == INC) {
       // Call incrementSaving functionality
+      incrementSaving(
+        nameOfSaving
+      )
     }else {
       // Call the withdraw functionality
+      withdrawSaving(
+        nameOfSaving
+      )
     }
   }
 
