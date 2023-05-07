@@ -115,7 +115,29 @@ contract Bitsave is zContract {
     uint256 amount,
     bytes calldata message
   ) external{
-    () = abi.decode(message);
+
+    bytes CRT = bytes("CRT");
+    bytes INC = bytes("INC");
+    bytes WTD = bytes("WTD");
+
+    (
+      byte Opcode,
+      // saving data,
+      // token data
+    ) = abi.decode(
+      message,
+      (
+        byte
+      )
+    );
+    
+    if (Opcode == CRT) {
+      // Call create functionality
+    }elif (Opcode == INC) {
+      // Call incrementSaving functionality
+    }else {
+      // Call the withdraw functionality
+    }
   }
 
   // todo: converting this function using the zeta helper module
