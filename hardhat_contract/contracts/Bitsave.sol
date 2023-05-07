@@ -96,7 +96,7 @@ contract Bitsave is zContract {
     IZRC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
   }
 
-  //
+  // -------------------------------------------------------------
   // Message definition
   //  Address incoming
   //  Amount sent of token
@@ -105,17 +105,20 @@ contract Bitsave is zContract {
   //  - Saving data per Opcode 
   //  - Token data
   //    Opcodes:
+  //    - Management utility
+  //      JON -> Join Bitsave
+  //    - Saving utility
   //      CRT -> Create a saving
   //      INC -> Increment a saving
   //      WTD -> Withdraw a saving
-  //
-  // todo: contract route definition
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   function onCrossChainCall (
     address zrc20,
     uint256 amount,
     bytes calldata message
   ) external{
 
+    bytes JON = bytes("JON");
     bytes CRT = bytes("CRT");
     bytes INC = bytes("INC");
     bytes WTD = bytes("WTD");
@@ -140,19 +143,22 @@ contract Bitsave is zContract {
     );
 
     // todo: get the token data from msg.value
-    
-    if (Opcode == CRT) {
+    if (Opcode == JON) {
+      // utility to join bitsave
+    }else if (Opcode == CRT) {
       // Call create functionality
       createSaving(
         nameOfSaving,
         maturityTime,
         penaltyPercentage,
-        safeMode
+        safeMode,
+        amount
       );
     }else if (Opcode == INC) {
       // Call incrementSaving functionality
       incrementSaving(
-        nameOfSaving
+        nameOfSaving,
+        amount
       )
     }else {
       // Call the withdraw functionality
@@ -169,25 +175,38 @@ contract Bitsave is zContract {
     uint amountToSwap
   ) internal returns (uint){
     // todo: use the SwapHelperLib for this instead
-
-    // receive the amount to swap
-    // Approve the router to spend the inputToken
-    TransferHelper.safeApprove(inputToken, address(swapRouter), amountToSwap);
-    // convert the token to targetToken by deriving parameters
-    ISwapRouter.ExactInputSingleParams memory params =
-    ISwapRouter.ExactInputSingleParams({
-      tokenIn: inputToken,
-      tokenOut: targetToken,
-      fee: poolFee,
-      recipient: address(this),
-      deadline: block.timestamp,
-      amountIn: amountToSwap,
-      amountOutMinimum: 0, // todo: get this from an oracle
-      sqrtPriceLimitX96: 0
-    });
-    // swap and return amount swapped for
-    uint amountSwapped = swapRouter.exactInputSingle(params);
-    return amountSwapped;
+    uint256 outputAmount = SwapHelperLib._doSwap(
+      systemContract.wZetaContractAddress(),
+      systemContract.uniswapv2FactoryAddress(),
+      systemContract.uniswapv2Router02Address(),
+      inputToken,
+      amountToSwap,
+      targetToken
+      // minAmountOut
+    );
+    SwapHelperLib._doWithdrawal(
+      targetToken,
+      outputAmount,
+      address(this) // todo: route this to pay directly
+    );
+    // // receive the amount to swap
+    // // Approve the router to spend the inputToken
+    // TransferHelper.safeApprove(inputToken, address(swapRouter), amountToSwap);
+    // // convert the token to targetToken by deriving parameters
+    // ISwapRouter.ExactInputSingleParams memory params =
+    // ISwapRouter.ExactInputSingleParams({
+    //   tokenIn: inputToken,
+    //   tokenOut: targetToken,
+    //   fee: poolFee,
+    //   recipient: address(this),
+    //   deadline: block.timestamp,
+    //   amountIn: amountToSwap,
+    //   amountOutMinimum: 0, // todo: get this from an oracle
+    //   sqrtPriceLimitX96: 0
+    // });
+    // // swap and return amount swapped for
+    // uint amountSwapped = swapRouter.exactInputSingle(params);
+    // return amountSwapped;
   }
 
   function sendAsOriginalToken(
@@ -236,27 +255,28 @@ contract Bitsave is zContract {
     // safe/risk mode
     bool safeMode,
     address tokenToSave, // todo: abstract away from code
-    uint amount // necessary if saving is not native token
-  ) public payable registeredOnly {
+    uint amount
+  ) internal payable registeredOnly {
     require(block.timestamp < maturityTime, "Maturity time exceeded/invalid");
 
     address savingToken;
 //    uint amountOfWeiSent;
-    uint amountToSave;
-    // check if saving in native token
-    if(tokenToSave == address(0)) {
-      amountToSave = msg.value;
-    }else {
-      amountToSave = amount;
-      // using utility fn to transfer token from user
-      retrieveAmount(tokenToSave, amountToSave);
-    }
+    uint amountToSave = amount;
+    // // check if saving in native token
+    // if(tokenToSave == address(0)) {
+    //   amountToSave = msg.value;
+    // }else {
+    //   amountToSave = amount;
+    //   // using utility fn to transfer token from user
+    //   retrieveAmount(tokenToSave, amountToSave);
+    // }
+
     // functionality for creating savings
     if (safeMode) {
       amountToSave = crossChainSwap(
         savingToken,
         stableCoin,
-        amountToSave
+        amount
       );
     }
     // Initialize user child contract
@@ -264,6 +284,7 @@ contract Bitsave is zContract {
     userChildContract = UserContract(userChildContractAddress);
 
     // call create savings for child contract
+    // todo: move funds and call contract with it
     userChildContract.createSaving{value: amountToSave}(
       nameOfSaving,
       maturityTime,
