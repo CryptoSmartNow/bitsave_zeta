@@ -1,0 +1,33 @@
+Arguments: 
+  /home/xpan/.nvm/versions/node/v16.20.0/bin/node /home/xpan/.nvm/versions/node/v16.20.0/bin/yarn add --dev @zetachain/zevm-protocol-contracts @zetachain/zevm-example-contracts @uniswap/v2-periphery @uniswap/v2-core
+
+PATH: 
+  /home/xpan/.nvm/versions/node/v16.20.0/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/xpan/.local/share/JetBrains/Toolbox/scripts:/home/xpan/.local/share/JetBrains/Toolbox/scripts
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.20.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: getaddrinfo EAI_AGAIN registry.yarnpkg.com
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26)
+
+npm manifest: 
+  {
+    "name": "hardhat-project",
+    "devDependencies": {
+      "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+      "hardhat": "^2.13.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
