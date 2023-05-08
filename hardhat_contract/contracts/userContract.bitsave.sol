@@ -11,6 +11,7 @@ import "@zetachain/zevm-protocol-contracts/contracts/system/SystemContract.sol";
 import "@zetachain/zevm-protocol-contracts/contracts/interfaces/zContract.sol";
 
 import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
+import "./utils/BitsaveHelperLib.sol";
 
 contract UserContract {
 
@@ -169,14 +170,20 @@ contract UserContract {
 
         // send the savings amount to withdraw
         address tokenId = toWithdrawSavings.tokenId;
-        ownerAddress.transfer(amountToWithdraw); // todo: use this only for native saving
+        // function can be abstracted for sending token out
         if (toWithdrawSavings.isSafeMode) {
+            // approve withdrawal from parent contract
+            uint256 actualAmountToWithdraw = BitsaveHelperLib.approveAmount(
+              bitsaveAddress,
+              amountToWithdraw,
+              toWithdrawSavings.tokenId
+            );
             // call parent for conversion
             Bitsave bitsave = Bitsave(bitsaveAddress);
             bitsave
                 .sendAsOriginalToken(
                     toWithdrawSavings.tokenId,
-                    amountToWithdraw,
+                    actualAmountToWithdraw,
                     ownerAddress
                 );
         }else {

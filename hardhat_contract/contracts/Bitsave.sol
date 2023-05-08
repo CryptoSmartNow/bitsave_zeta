@@ -15,13 +15,8 @@ import "@zetachain/zevm-protocol-contracts/contracts/system/SystemContract.sol";
 import "@zetachain/zevm-protocol-contracts/contracts/interfaces/zContract.sol";
 
 import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
+import "./utils/BitsaveHelperLib.sol";
 
-// Make interface work with zContract
-// Use the swap SwapHelperLib
-// Employ the interface for ZRC 
-// Introduce the swap into userChildContract
-// Complete the swap from child contract 
-// Finish the functionality with swap
 // Try testing
 // Deploy and Finish
 // May the forces be with you
@@ -84,23 +79,23 @@ contract Bitsave is zContract {
     return stableCoin;
   }
 
-  function approveAmount(
-    address childContractAddress,
-    uint256 amountToApprove,
-    address targetToken
-  ) internal view return(uint256) {
-    (address gasZRC20, uint256 gasFee) = IZRC20(targetToken)
-      .withdrawGasFee();
-
-      if (gasZRC20 != targetZRC20) revert WrongGasContract();
-      if (gasFee >= amount) revert NotEnoughToPayGasFee();
-
-      uint256 actualSaving = amountToApprove - gasFee;
-
-      IZRC20(targetZRC20).approve(targetZRC20, gasFee);
-      IZRC20(targetZRC20).approve(childContractAddress, actualSaving);
-      return actualSaving;
-  }
+  // function approveAmount(
+  //   address childContractAddress,
+  //   uint256 amountToApprove,
+  //   address targetToken
+  // ) internal view return(uint256) {
+  //   (address gasZRC20, uint256 gasFee) = IZRC20(targetToken)
+  //     .withdrawGasFee();
+  //
+  //     if (gasZRC20 != targetZRC20) revert WrongGasContract();
+  //     if (gasFee >= amount) revert NotEnoughToPayGasFee();
+  //
+  //     uint256 actualSaving = amountToApprove - gasFee;
+  //
+  //     IZRC20(targetZRC20).approve(targetZRC20, gasFee);
+  //     IZRC20(targetZRC20).approve(childContractAddress, actualSaving);
+  //     return actualSaving;
+  // }
 
   function retrieveAmount(
     address tokenToRetrieve,
@@ -305,7 +300,7 @@ contract Bitsave is zContract {
 
     // call create savings for child contract
     // move funds and call contract with it
-    uint actualSaving = approveAmount(
+    uint actualSaving = BitsaveHelperLib.approveAmount(
       userChildContractAddress,
       amountToSave,
       savingToken
@@ -346,7 +341,7 @@ contract Bitsave is zContract {
       );
     }
     // call withdrawSavings
-    uint actualSaving = approveAmount(
+    uint actualSaving = BitsaveHelperLib.approveAmount(
       userChildContractAddress,
       savingPlusAmount,
       tokenToRetrieve
