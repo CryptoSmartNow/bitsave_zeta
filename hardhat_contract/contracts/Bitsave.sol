@@ -156,6 +156,7 @@ contract Bitsave is zContract {
     // todo: get the token data from msg.value
     if (Opcode == JON) {
       // utility to join bitsave
+      joinBitsave();
     }else if (Opcode == CRT) {
       // Call create functionality
       createSaving(
@@ -171,12 +172,12 @@ contract Bitsave is zContract {
       incrementSaving(
         nameOfSaving,
         amount
-      )
+      );
     }else {
       // Call the withdraw functionality
       withdrawSaving(
         nameOfSaving
-      )
+      );
     }
   }
 
