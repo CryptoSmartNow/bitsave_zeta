@@ -80,6 +80,7 @@ contract UserContract {
         uint256 maturityTime,
         uint8 penaltyPercentage,
         address tokenId,
+        uint256 amountToRetrieve,
         bool isSafeMode
     ) public payable bitsaveOnly returns (uint) {
         uint startTime = block.timestamp;
@@ -92,12 +93,19 @@ contract UserContract {
         uint accumulatedInterest = 3; // todo: create interest formulae
 
         // retrieve token from parent contract
-
+        uint256 currentBalance = address(this).balance;
+        retrieveToken(
+          bitsaveAddress,
+          tokenId,
+          amountToRetrieve
+        );
+        uint256 newBalance = address(this).balance;
+        require(currentBalance + amountToRetrieve <= newBalance, "Saving not withdrawn correctly");
         // SavingDataStruct storage saving
 
         // store saving to map of savings
         savings[name] = SavingDataStruct({
-            amount : msg.value,
+            amount : amountToRetrieve,
             maturityTime : maturityTime,
             interestAccumulated : accumulatedInterest,
             startTime : startTime,
