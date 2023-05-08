@@ -326,13 +326,16 @@ contract Bitsave is zContract {
   //  @param:
   //    string nameOfSaving
   //  */
-  function incrementSaving(string memory nameOfSavings) public payable registeredOnly {
-    // todo: handle saving in token
-    retrieveAmount(); // todo: structure this function
+  function incrementSaving(
+    string memory nameOfSavings
+    address tokenToRetrieve,
+    uint256 amount
+  ) internal payable registeredOnly {
     // initialize userChildContract
-    userChildContract = UserContract(addressToUserBS[msg.sender]);
+    address userChildContractAddress = addressToUserBS[msg.sender];
+    userChildContract = UserContract(userChildContractAddress);
     // todo: perform amount conversion and everything
-    uint savingPlusAmount = msg.value;
+    uint savingPlusAmount = amount;
     // todo: check savings detail by reading the storage of userChildContract
     bool isSafeMode = userChildContract.getSavingMode(nameOfSavings);
     if (isSafeMode) {
@@ -343,8 +346,15 @@ contract Bitsave is zContract {
       );
     }
     // call withdrawSavings
-    // todo: send savings amount to child contract
-    userChildContract.incrementSaving{value: savingPlusAmount}(nameOfSavings);
+    uint actualSaving = approveAmount(
+      userChildContractAddress,
+      savingPlusAmount,
+      tokenToRetrieve
+    )
+    userChildContract.incrementSaving(
+      nameOfSavings
+      actualSaving
+    );
   }
 
   //

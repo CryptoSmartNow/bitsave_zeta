@@ -68,6 +68,21 @@ contract UserContract {
           amount
         );
     }
+    
+    function handleTokenRetrieving(
+      address tokenId,
+      uint amountToRetrieve
+    ) internal pure{
+      // retrieve token from parent contract
+      uint256 currentBalance = address(this).balance;
+      retrieveToken(
+        bitsaveAddress,
+        tokenId,
+        amountToRetrieve
+      );
+      uint256 newBalance = address(this).balance;
+      require(currentBalance + amountToRetrieve <= newBalance, "Saving not withdrawn correctly");
+    }
 
     function getSavings(string memory nameOfSaving) public view returns (SavingDataStruct memory) {
         return savings[nameOfSaving];
@@ -92,17 +107,11 @@ contract UserContract {
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae
 
-        // retrieve token from parent contract
-        uint256 currentBalance = address(this).balance;
-        retrieveToken(
-          bitsaveAddress,
+        handleTokenRetrieving(
           tokenId,
           amountToRetrieve
         );
-        uint256 newBalance = address(this).balance;
-        require(currentBalance + amountToRetrieve <= newBalance, "Saving not withdrawn correctly");
-        // SavingDataStruct storage saving
-
+        
         // store saving to map of savings
         savings[name] = SavingDataStruct({
             amount : amountToRetrieve,
@@ -119,15 +128,24 @@ contract UserContract {
 
     // functionality to add to savings
     // returns: uint interest accumulated
-    function incrementSaving (string memory name) public payable bitsaveOnly returns (uint) {
+    function incrementSaving (
+      string memory name,
+      uint256 savingPlusAmount
+    ) public payable bitsaveOnly returns (uint) {
         SavingDataStruct storage toFundSavings = savings[name];
         require(toFundSavings.isValid, "Saving to fund does not exist");
         require(block.timestamp > toFundSavings.maturityTime, "Sorry, saving has ended");
 
+        // handle retrieving token from contract
+        handleTokenRetrieving(
+          tokenId,
+          savingPlusAmount
+        );
+
         // calculate new interest
         uint recalculatedInterest = 1;
         toFundSavings.interestAccumulated = toFundSavings.interestAccumulated + recalculatedInterest;
-        toFundSavings.amount = toFundSavings.amount + msg.value;
+        toFundSavings.amount = toFundSavings.amount + savingPlusAmount;
 
         // save new savings data
         savings[name] = toFundSavings;
