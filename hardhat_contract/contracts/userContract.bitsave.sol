@@ -90,7 +90,7 @@ contract UserContract {
 
         // retrieve token from parent contract
 
-//        SavingDataStruct storage saving
+        // SavingDataStruct storage saving
 
         // store saving to map of savings
         savings[name] = SavingDataStruct({

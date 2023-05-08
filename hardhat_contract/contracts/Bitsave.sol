@@ -284,7 +284,8 @@ contract Bitsave is zContract {
     userChildContract = UserContract(userChildContractAddress);
 
     // call create savings for child contract
-    // todo: move funds and call contract with it
+    // move funds and call contract with it
+    // todo: space to send value to child contract
     userChildContract.createSaving{value: amountToSave}(
       nameOfSaving,
       maturityTime,
@@ -317,6 +318,7 @@ contract Bitsave is zContract {
       );
     }
     // call withdrawSavings
+    // todo: send savings amount to child contract
     userChildContract.incrementSaving{value: savingPlusAmount}(nameOfSavings);
   }
 
