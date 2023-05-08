@@ -62,8 +62,11 @@ contract UserContract {
         uint amount
     ) internal {
         address thisAddress = address(this);
-        IZRC20(tokenToRetrieve).approve(toRetrieveFrom, amount);
-        IZRC20(tokenToRetrieve).withdraw(, amount);
+        IZRC20(tokenToRetrieve).transferFrom(
+          toRetrieveFrom,
+          thisAddress,
+          amount
+        );
     }
 
     function getSavings(string memory nameOfSaving) public view returns (SavingDataStruct memory) {
