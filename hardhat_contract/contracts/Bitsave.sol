@@ -84,6 +84,24 @@ contract Bitsave is zContract {
     return stableCoin;
   }
 
+  function approveAmount(
+    address childContractAddress,
+    uint256 amountToApprove,
+    address targetToken
+  ) internal view return(uint256) {
+    (address gasZRC20, uint256 gasFee) = IZRC20(targetToken)
+      .withdrawGasFee();
+
+      if (gasZRC20 != targetZRC20) revert WrongGasContract();
+      if (gasFee >= amount) revert NotEnoughToPayGasFee();
+
+      uint256 actualSaving = amountToApprove - gasFee;
+
+      IZRC20(targetZRC20).approve(targetZRC20, gasFee);
+      IZRC20(targetZRC20).approve(childContractAddress, actualSaving);
+      return actualSaving;
+  }
+
   function retrieveAmount(
     address tokenToRetrieve,
     uint amountToRetrieve
@@ -152,6 +170,7 @@ contract Bitsave is zContract {
         maturityTime,
         penaltyPercentage,
         safeMode,
+        zrc20,
         amount
       );
     }else if (Opcode == INC) {
@@ -254,12 +273,12 @@ contract Bitsave is zContract {
     uint8 penaltyPercentage,
     // safe/risk mode
     bool safeMode,
-    address tokenToSave, // todo: abstract away from code
+    address tokenToSave,
     uint amount
   ) internal payable registeredOnly {
     require(block.timestamp < maturityTime, "Maturity time exceeded/invalid");
 
-    address savingToken;
+    address savingToken = tokenToSave;
 //    uint amountOfWeiSent;
     uint amountToSave = amount;
     // // check if saving in native token
@@ -278,6 +297,7 @@ contract Bitsave is zContract {
         stableCoin,
         amount
       );
+      savingToken = stableCoin;
     }
     // Initialize user child contract
     address userChildContractAddress = getUserChildContractAddress();
@@ -285,8 +305,12 @@ contract Bitsave is zContract {
 
     // call create savings for child contract
     // move funds and call contract with it
-    // todo: space to send value to child contract
-    userChildContract.createSaving{value: amountToSave}(
+    uint actualSaving = approveAmount(
+      userChildContractAddress,
+      amountToSave,
+      savingToken
+    );
+    userChildContract.createSaving(
       nameOfSaving,
       maturityTime,
       penaltyPercentage,
