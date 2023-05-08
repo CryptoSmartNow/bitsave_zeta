@@ -101,9 +101,7 @@ contract Bitsave is zContract {
     address tokenToRetrieve,
     uint amountToRetrieve
   ) internal {
-    // -------approve amount from user
-//    IERC20(tokenToRetrieve).approve(msg.sender, amountToRetrieve);
-    IZRC20(tokenToRetrieve).approve(msg.sender, amountToRetrieve);
+    // -------token amount already approved from user
     // -------retrieveAmount from sender
 //    IERC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
     IZRC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);

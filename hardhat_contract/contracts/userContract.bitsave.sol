@@ -52,9 +52,13 @@ contract UserContract {
 
     function transferToken(
         address token,
-        address recipient, uint amount) internal {
-//        IERC20(token).transfer(recipient, amount);
-        IZRC20(token).transfer(recipient, amount);
+        address recipient,
+        uint amount
+    ) internal {
+      (address gasZRC20, uint256 gasFee) = IZRC20(token).withdrawGasFee();
+      // todo: revert for wrong gas contract
+      if (gasFee > amount) revert("Not enough fund for gas");
+      IZRC20(token).transfer(recipient, amount);
     }
 
     function retrieveToken(
