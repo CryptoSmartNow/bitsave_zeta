@@ -1,32 +1,22 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
-const hre = require("hardhat");
+import { ethers } from "hardhat";
+import {USDC_ADDRESS} from "../constants/config";
 
-async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+export const SYSTEM_CONTRACT = "0x239e96c8f17C85c30100AC26F635Ea15f23E9c67";
 
-  const lockedAmount = hre.ethers.utils.parseEther("0.001");
+const main = async () => {
+  console.log(`Deploying Bitsave...`);
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
-
-  console.log(
-    `Lock with ${ethers.utils.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+  const Factory = await ethers.getContractFactory("Bitsave");
+  const contract = await Factory.deploy(
+      USDC_ADDRESS,
+      SYSTEM_CONTRACT
   );
-}
+  await contract.deployed();
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+  console.log("Deployed ZetaSwap. Address:", contract.address);
+};
+
 main().catch((error) => {
   console.error(error);
-  process.exitCode = 1;
+  process.exit(1);
 });
