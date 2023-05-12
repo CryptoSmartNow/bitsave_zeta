@@ -50,7 +50,7 @@ describe("Bitsave test", ()=>{
 
         const Bitsave = await ethers.getContractFactory("Bitsave");
         const bitsave = await Bitsave.deploy(
-            USDC_ADDRESS,
+            USDC_ADDRESS, // make this one of the tokens
             systemContract.address,
             {
                 value: 2 * ONE_GWEI

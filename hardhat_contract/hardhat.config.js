@@ -12,7 +12,12 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY !== undefined ?
   [`0x${process.env.PRIVATE_KEY}`] : [];
 
 const config = {
-  solidity: "0.8.7",
+  solidity: {
+    compilers: [
+      { version: "0.6.6" /** For uniswap v2 */ },
+      { version: "0.8.7" },
+    ]
+  },
   networks: {
     ...getHardhatConfigNetworks(PRIVATE_KEY)
   }
