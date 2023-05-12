@@ -33,9 +33,9 @@ contract Bitsave is zContract {
   // ****Contract params****
   // router02 address
   SystemContract public immutable systemContract;
-  address public router02;
+//  address public router02;
   address public stableCoin;
-  ISwapRouter public immutable swapRouter;
+//  ISwapRouter public immutable swapRouter;
   uint24 public constant poolFee = 3000;
   // ** Contract params **
 
@@ -59,21 +59,21 @@ contract Bitsave is zContract {
   // ********++++++ Subcontract ++++********
 
   constructor(
-    ISwapRouter _swapRouter,
-    address _router02,
+//    ISwapRouter _swapRouter,
+//    address _router02,
     address _stableCoin,
     address systemContractAddress
   ) payable {
     // All constructor functions
-    swapRouter = _swapRouter;
-    router02 = _router02;
+//    swapRouter = _swapRouter;
+//    router02 = _router02;
     stableCoin = _stableCoin;
     systemContract = SystemContract(systemContractAddress);
   }
 
-  function getSwapRouter() public view returns(ISwapRouter) {
-    return swapRouter;
-  }
+//  function getSwapRouter() public view returns(ISwapRouter) {
+//    return swapRouter;
+//  }
 
   function getStableCoin() public view returns(address) {
     return stableCoin;
