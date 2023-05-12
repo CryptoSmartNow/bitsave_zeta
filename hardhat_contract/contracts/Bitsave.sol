@@ -202,6 +202,7 @@ contract Bitsave is zContract {
       outputAmount,
       address(this) // todo: route this to pay directly
     );
+    return outputAmount;
     // // receive the amount to swap
     // // Approve the router to spend the inputToken
     // TransferHelper.safeApprove(inputToken, address(swapRouter), amountToSwap);
@@ -320,8 +321,8 @@ contract Bitsave is zContract {
   //  @param:
   //    string nameOfSaving
   //  */
-  function incrementSaving(
-    string memory nameOfSavings
+  function incrementSaving (
+    string memory nameOfSavings,
     address tokenToRetrieve,
     uint256 amount
   ) internal payable registeredOnly {
@@ -344,9 +345,9 @@ contract Bitsave is zContract {
       userChildContractAddress,
       savingPlusAmount,
       tokenToRetrieve
-    )
+    );
     userChildContract.incrementSaving(
-      nameOfSavings
+      nameOfSavings,
       actualSaving
     );
   }
