@@ -54,6 +54,13 @@ contract Bitsave is zContract {
 
   // ********------ Security -------********
 
+  // ********------ Constants ------********
+  string public constant JON = "JON";
+  string public constant CRT = "CRT";
+  string public constant INC = "INC";
+  string public constant WTD = "WTD";
+  // ********++++++ Constants ++++++********
+
   // ********------ Subcontract ----********
   UserContract userChildContract;
   // ********++++++ Subcontract ++++********
@@ -129,13 +136,8 @@ contract Bitsave is zContract {
     bytes calldata message
   ) external override{
 
-    bytes JON = bytes("JON");
-    bytes CRT = bytes("CRT");
-    bytes INC = bytes("INC");
-    bytes WTD = bytes("WTD");
-
     (
-      bytes calldata Opcode,
+      string calldata Opcode,
       // saving data,
       string calldata nameOfSaving,
       uint256 maturityTime,
@@ -145,7 +147,7 @@ contract Bitsave is zContract {
     ) = abi.decode(
       message,
       (
-        bytes,
+        string,
         string,
         uint256,
         uint8,
