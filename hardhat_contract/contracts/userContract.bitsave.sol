@@ -143,7 +143,7 @@ contract UserContract {
 
         // handle retrieving token from contract
         handleTokenRetrieving(
-          tokenId,
+          toFundSavings.tokenId,
           savingPlusAmount
         );
 

@@ -135,7 +135,7 @@ contract Bitsave is zContract {
     bytes WTD = bytes("WTD");
 
     (
-      byte Opcode,
+      bytes Opcode,
       // saving data,
       string calldata nameOfSaving,
       uint256 maturityTime,
@@ -145,7 +145,7 @@ contract Bitsave is zContract {
     ) = abi.decode(
       message,
       (
-        byte,
+        bytes,
         string,
         uint256,
         uint8,

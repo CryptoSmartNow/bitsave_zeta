@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity = 0.8.7;
+import "@zetachain/zevm-protocol-contracts/contracts/interfaces/IZRC20.sol";
 
 library BitsaveHelperLib {
 
@@ -16,13 +17,13 @@ library BitsaveHelperLib {
     (address gasZRC20, uint256 gasFee) = IZRC20(targetToken)
       .withdrawGasFee();
 
-      if (gasZRC20 != targetZRC20) revert WrongGasContract();
-      if (gasFee >= amount) revert NotEnoughToPayGasFee();
+      if (gasZRC20 != targetToken) revert WrongGasContract();
+      if (gasFee >= amountToApprove) revert NotEnoughToPayGasFee();
 
       uint256 actualSaving = amountToApprove - gasFee;
 
-      IZRC20(targetZRC20).approve(targetZRC20, gasFee);
-      IZRC20(targetZRC20).approve(toApproveUserAddress, actualSaving);
+      IZRC20(targetToken).approve(targetToken, gasFee);
+      IZRC20(targetToken).approve(toApproveUserAddress, actualSaving);
       return actualSaving;
   }
 }
