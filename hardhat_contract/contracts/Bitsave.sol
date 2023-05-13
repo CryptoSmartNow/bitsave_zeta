@@ -15,6 +15,7 @@ import "@zetachain/zevm-protocol-contracts/contracts/system/SystemContract.sol";
 import "@zetachain/zevm-protocol-contracts/contracts/interfaces/zContract.sol";
 
 import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
+import "./utils/BytesHelperLib.sol";
 import "./utils/BitsaveHelperLib.sol";
 
 // Try testing
@@ -86,24 +87,6 @@ contract Bitsave is zContract {
     return stableCoin;
   }
 
-  // function approveAmount(
-  //   address childContractAddress,
-  //   uint256 amountToApprove,
-  //   address targetToken
-  // ) internal view return(uint256) {
-  //   (address gasZRC20, uint256 gasFee) = IZRC20(targetToken)
-  //     .withdrawGasFee();
-  //
-  //     if (gasZRC20 != targetZRC20) revert WrongGasContract();
-  //     if (gasFee >= amount) revert NotEnoughToPayGasFee();
-  //
-  //     uint256 actualSaving = amountToApprove - gasFee;
-  //
-  //     IZRC20(targetZRC20).approve(targetZRC20, gasFee);
-  //     IZRC20(targetZRC20).approve(childContractAddress, actualSaving);
-  //     return actualSaving;
-  // }
-
   function retrieveAmount(
     address tokenToRetrieve,
     uint amountToRetrieve
@@ -137,7 +120,7 @@ contract Bitsave is zContract {
   ) external override{
 
     (
-      string calldata Opcode,
+      string memory Opcode,
       // saving data,
       string calldata nameOfSaving,
       uint256 maturityTime,
@@ -156,10 +139,10 @@ contract Bitsave is zContract {
     );
 
     // todo: get the token data from msg.value
-    if (Opcode == JON) {
+    if (BytesHelperLib.compareStrings(Opcode, JON)) {
       // utility to join bitsave
       joinBitsave();
-    }else if (Opcode == CRT) {
+    }else if (BytesHelperLib.compareStrings(Opcode, CRT)) {
       // Call create functionality
       createSaving(
         nameOfSaving,
@@ -169,7 +152,7 @@ contract Bitsave is zContract {
         zrc20,
         amount
       );
-    }else if (Opcode == INC) {
+    }else if (BytesHelperLib.compareStrings(Opcode, INC)) {
       // Call incrementSaving functionality
       incrementSaving(
         nameOfSaving,
@@ -196,33 +179,15 @@ contract Bitsave is zContract {
       systemContract.uniswapv2Router02Address(),
       inputToken,
       amountToSwap,
-      targetToken
-      // minAmountOut
+      targetToken,
+      0
     );
     SwapHelperLib._doWithdrawal(
       targetToken,
       outputAmount,
-      address(this) // todo: route this to pay directly
+      BytesHelperLib.addressToBytes(address(this)) // todo: can pay directly
     );
     return outputAmount;
-    // // receive the amount to swap
-    // // Approve the router to spend the inputToken
-    // TransferHelper.safeApprove(inputToken, address(swapRouter), amountToSwap);
-    // // convert the token to targetToken by deriving parameters
-    // ISwapRouter.ExactInputSingleParams memory params =
-    // ISwapRouter.ExactInputSingleParams({
-    //   tokenIn: inputToken,
-    //   tokenOut: targetToken,
-    //   fee: poolFee,
-    //   recipient: address(this),
-    //   deadline: block.timestamp,
-    //   amountIn: amountToSwap,
-    //   amountOutMinimum: 0, // todo: get this from an oracle
-    //   sqrtPriceLimitX96: 0
-    // });
-    // // swap and return amount swapped for
-    // uint amountSwapped = swapRouter.exactInputSingle(params);
-    // return amountSwapped;
   }
 
   function sendAsOriginalToken(
@@ -272,7 +237,7 @@ contract Bitsave is zContract {
     bool safeMode,
     address tokenToSave,
     uint amount
-  ) internal payable registeredOnly {
+  ) internal registeredOnly {
     require(block.timestamp < maturityTime, "Maturity time exceeded/invalid");
 
     address savingToken = tokenToSave;
@@ -327,7 +292,7 @@ contract Bitsave is zContract {
     string memory nameOfSavings,
     address tokenToRetrieve,
     uint256 amount
-  ) internal payable registeredOnly {
+  ) internal registeredOnly {
     // initialize userChildContract
     address userChildContractAddress = addressToUserBS[msg.sender];
     userChildContract = UserContract(userChildContractAddress);

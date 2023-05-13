@@ -45,9 +45,9 @@ contract UserContract {
 
     constructor() payable {
         // save bitsaveAddress first // todo: retrieve correct address
-        bitsaveAddress = msg.sender;
+        bitsaveAddress = payable(msg.sender);
         // store owner's address
-        ownerAddress = msg.sender;
+        ownerAddress = payable(msg.sender);
     }
 
     function transferToken(
@@ -57,7 +57,7 @@ contract UserContract {
     ) internal {
       (address gasZRC20, uint256 gasFee) = IZRC20(token).withdrawGasFee();
       // todo: revert for wrong gas contract
-      if (gasFee > amount) revert("Not enough fund for gas");
+      if (gasFee > amount) revert BitsaveHelperLib.NotEnoughToPayGasFee();
       IZRC20(token).transfer(recipient, amount);
     }
 
