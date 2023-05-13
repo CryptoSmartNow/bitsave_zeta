@@ -127,7 +127,7 @@ contract Bitsave is zContract {
     address zrc20,
     uint256 amount,
     bytes calldata message
-  ) external{
+  ) external override{
 
     bytes JON = bytes("JON");
     bytes CRT = bytes("CRT");
@@ -135,7 +135,7 @@ contract Bitsave is zContract {
     bytes WTD = bytes("WTD");
 
     (
-      bytes Opcode,
+      bytes calldata Opcode,
       // saving data,
       string calldata nameOfSaving,
       uint256 maturityTime,
