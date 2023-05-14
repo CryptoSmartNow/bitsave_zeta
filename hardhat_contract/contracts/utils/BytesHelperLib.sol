@@ -20,8 +20,7 @@ library BytesHelperLib {
         return bytes32(uint256(uint160(someAddress)));
     }
 
-    function compareStrings(string memory s1, string memory s2) internal pure returns (bool) {
-        bytes memory b1 = bytes(s1);
+    function compareStrings(bytes memory b1, string memory s2) internal pure returns (bool) {
         bytes memory b2 = bytes(s2);
         uint256 l1 = b1.length;
         if (l1 != b2.length) return false;

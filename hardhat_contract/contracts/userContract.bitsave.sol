@@ -77,7 +77,7 @@ contract UserContract {
     function handleTokenRetrieving(
       address tokenId,
       uint amountToRetrieve
-    ) internal pure{
+    ) internal{
       // retrieve token from parent contract
       uint256 currentBalance = address(this).balance;
       retrieveToken(

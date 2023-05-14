@@ -13,7 +13,7 @@ library BitsaveHelperLib {
     address toApproveUserAddress,
     uint256 amountToApprove,
     address targetToken
-  ) internal view returns (uint256) {
+  ) internal returns (uint256) {
     (address gasZRC20, uint256 gasFee) = IZRC20(targetToken)
       .withdrawGasFee();
 

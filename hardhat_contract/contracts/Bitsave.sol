@@ -120,9 +120,9 @@ contract Bitsave is zContract {
   ) external override{
 
     (
-      string memory Opcode,
+      bytes memory Opcode,
       // saving data,
-      string calldata nameOfSaving,
+      string memory nameOfSaving,
       uint256 maturityTime,
       uint8 penaltyPercentage,
       bool safeMode
@@ -130,7 +130,7 @@ contract Bitsave is zContract {
     ) = abi.decode(
       message,
       (
-        string,
+        bytes,
         string,
         uint256,
         uint8,
@@ -156,6 +156,7 @@ contract Bitsave is zContract {
       // Call incrementSaving functionality
       incrementSaving(
         nameOfSaving,
+        zrc20,
         amount
       );
     }else {
