@@ -25,10 +25,6 @@ import "./utils/BitsaveHelperLib.sol";
 
 contract Bitsave is zContract {
 
-  // Errors
-  error WrongGasContract();
-  error NotEnoughToPayGasFee();
-
   // *********++++++ Storage +++++++********
 
   // ****Contract params****
@@ -211,7 +207,7 @@ contract Bitsave is zContract {
   function joinBitsave() public payable returns (address) {
     require(msg.value >= 10000, "Incomplete bitsave fee"); // todo: encapsulate
     // deploy child contract for user
-    address userBSAddress = address(new UserContract{value: 1000}());
+    address userBSAddress = address(new UserContract{value: 1000}(msg.sender));
     addressToUserBS[msg.sender] = userBSAddress;
     return userBSAddress;
   }

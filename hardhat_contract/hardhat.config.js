@@ -5,6 +5,7 @@ const { getHardhatConfigNetworks } =  require("@zetachain/addresses-tools/dist/n
 // Tasks
 require("./tasks/account")
 require("./tasks/faucet")
+require("./tasks/deploy")
 
 dotenv.config();
 

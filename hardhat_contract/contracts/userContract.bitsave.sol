@@ -37,17 +37,19 @@ contract UserContract {
     // *****+++++++ DS for user saving contract ++++++++++++
 
     // *******-------- Security functionalities ------------
+    error callNotFromBitsave();
+
     modifier bitsaveOnly {
-        require(msg.sender == bitsaveAddress, "Functionality can only be called by Bitsave protocol.");
+        if (msg.sender != bitsaveAddress) revert callNotFromBitsave();
         _;
     }
     // ******+++++++++ Security functionalities ++++++++++++
 
-    constructor() payable {
+    constructor(address ownerAddress) payable {
         // save bitsaveAddress first // todo: retrieve correct address
         bitsaveAddress = payable(msg.sender);
         // store owner's address
-        ownerAddress = payable(msg.sender);
+        ownerAddress = payable(ownerAddress);
     }
 
     function transferToken(
