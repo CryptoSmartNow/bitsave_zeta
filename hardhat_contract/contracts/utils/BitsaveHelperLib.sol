@@ -13,6 +13,22 @@ library BitsaveHelperLib {
     error UserNotRegistered();
     error InvalidSaving();
 
+    // Events
+    event SavingCreated(
+        string nameOfSaving,
+        uint amount,
+        address token
+    );
+    event SavingIncremented(
+        string nameOfSaving,
+        uint amountAdded,
+        uint totalAmountNow,
+        address token
+    );
+    event SavingWithdrawn(
+        string nameOfSaving
+    );
+
     function approveAmount(
         address toApproveUserAddress,
         uint256 amountToApprove,
@@ -44,8 +60,15 @@ library BitsaveHelperLib {
         // fix: uses gasFee * 2
         if (gasFee > amount) revert NotEnoughToPayGasFee();
         // convert address to Byte
+        bytes userAddressBytes = BytesHelperLib.addressToBytes(recipient);
         IZRC20(token).withdraw(
-            BytesHelperLib.addressToBytes(recipient),
+            userAddressBytes,
+            amount
+        );
+
+        emit IZRC20(token).Withdrawal(
+            address(this),
+            userAddressBytes,
             amount
         );
     }

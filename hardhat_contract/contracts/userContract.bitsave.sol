@@ -118,6 +118,13 @@ contract UserContract {
             isSafeMode : isSafeMode,
             isValid : true
         });
+
+        emit BitsaveHelperLib.SavingCreated(
+            name,
+            amountToRetrieve,
+            tokenId
+        );
+
         return 1;
     }
 
@@ -143,6 +150,14 @@ contract UserContract {
 
         // save new savings data
         savings[name] = toFundSavings;
+
+        emit BitsaveHelperLib.SavingIncremented(
+            name,
+            savingPlusAmount,
+            toFundSavings.amount,
+            toFundSavings.tokenId
+        );
+
         return toFundSavings.interestAccumulated;
     }
 
@@ -186,9 +201,13 @@ contract UserContract {
                 amountToWithdraw
             );
         }
-        // Delete savings; todo: ensure saving is deleted
+        // Delete savings; ensure saving is deleted/made invalid
         savings[name].isValid = false;
-        delete savings[name]; // todo: can't delete so make invalid
+
+        emit BitsaveHelperLib.SavingWithdrawn(
+            name
+        );
+
         return "savings withdrawn successfully";
     }
 
