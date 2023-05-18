@@ -18,17 +18,20 @@ library BitsaveHelperLib {
         uint256 amountToApprove,
         address targetToken
       ) internal returns (uint256) {
+
         (address gasZRC20, uint256 gasFee) = IZRC20(targetToken)
           .withdrawGasFee();
 
-          if (gasZRC20 != targetToken) revert WrongGasContract();
-          if (gasFee >= amountToApprove) revert NotEnoughToPayGasFee();
+        gasFee = gasFee * 2;
 
-          uint256 actualSaving = amountToApprove - gasFee;
+        if (gasZRC20 != targetToken) revert WrongGasContract();
+        if (gasFee >= amountToApprove) revert NotEnoughToPayGasFee();
 
-          IZRC20(targetToken).approve(targetToken, gasFee);
-          IZRC20(targetToken).approve(toApproveUserAddress, actualSaving);
-          return actualSaving;
+        uint256 actualSaving = amountToApprove - gasFee;
+
+        IZRC20(targetToken).approve(targetToken, gasFee);
+        IZRC20(targetToken).approve(toApproveUserAddress, actualSaving);
+        return actualSaving;
       }
 
     function transferToken(
@@ -37,8 +40,9 @@ library BitsaveHelperLib {
         uint amount
     ) internal {
         (address gasZRC20, uint256 gasFee) = IZRC20(token).withdrawGasFee();
+        gasFee = gasFee * 2;
         // fix: uses gasFee * 2
-        if (gasFee * 2 > amount) revert NotEnoughToPayGasFee();
+        if (gasFee > amount) revert NotEnoughToPayGasFee();
         // convert address to Byte
         IZRC20(token).withdraw(
             BytesHelperLib.addressToBytes(recipient),
