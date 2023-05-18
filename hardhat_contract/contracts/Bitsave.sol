@@ -17,11 +17,11 @@ import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
 import "./utils/BytesHelperLib.sol";
 import "./utils/BitsaveHelperLib.sol";
 
-// Try testing
-// Deploy and Finish
-// May the forces be with you
 
-
+/// @title Bitsave protocol parent contract
+/// @author xpanvictor
+/// @notice this contract can be interacted with from user
+/// @custom:test This is a test contract
 contract Bitsave is zContract {
 
   // *********++++++ Storage +++++++********
@@ -29,9 +29,9 @@ contract Bitsave is zContract {
   // ****Contract params****
   // router02 address
   SystemContract public immutable systemContract;
-//  address public router02;
+  //  address public router02;
   address public stableCoin;
-//  ISwapRouter public immutable swapRouter;
+  //  ISwapRouter public immutable swapRouter;
   uint24 public constant poolFee = 3000;
   // ** Contract params **
 
@@ -44,7 +44,7 @@ contract Bitsave is zContract {
   // ********++++++ Security +++++++********
 
   modifier registeredOnly {
-    require(addressToUserBS[msg.sender] != address(0x0), "User not registered to bitsave!");
+    if (addressToUserBS[msg.sender] != address(0x0)) revert BitsaveHelperLib.UserNotRegistered();
     _;
   }
 
@@ -78,8 +78,8 @@ contract Bitsave is zContract {
     address tokenToRetrieve,
     uint amountToRetrieve
   ) internal {
-    // -------token amount already approved from user
-    // -------retrieveAmount from sender
+    /// -------token amount already approved from user
+    /// -------retrieveAmount from sender
     IZRC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
   }
 
@@ -183,19 +183,19 @@ contract Bitsave is zContract {
     address ownerAddress
   ) public payable {
     // check amount sent
-    require(amount > poolFee, "Amount to convert not enough");
+    if(amount > poolFee) revert BitsaveHelperLib.AmountNotEnough();
     // retrieve stable coin used from owner address
     retrieveAmount(stableCoin, amount);
     // convert to original token using crossChainSwap()
     crossChainSwap(stableCoin, originalToken, amount);
     // send to owner address directly
-//    IERC20(originalToken).transfer(ownerAddress, amount);
+    // IERC20(originalToken).transfer(ownerAddress, amount);
     IZRC20(originalToken).transfer(ownerAddress, amount);
   }
 
   // the join bitsave functionality implementation, charges and co
   function joinBitsave() public payable returns (address) {
-    require(msg.value >= 10000, "Incomplete bitsave fee"); // todo: encapsulate
+    if (msg.value <= 10_000) revert BitsaveHelperLib.AmountNotEnough(); // todo: work on price
     // deploy child contract for user
     address userBSAddress = address(new UserContract{value: 1000}(msg.sender));
     addressToUserBS[msg.sender] = userBSAddress;
@@ -206,16 +206,16 @@ contract Bitsave is zContract {
     return addressToUserBS[msg.sender];
   }
 
-  // /*
-  // createSaving
-  // @payable
-  //   Pay the amount to save to this function // todo: check for minimum value
-  // @param:
-  //   string nameOfSaving,
-  //   uint256 timestamp of when savings should end
-  //   uint8 value of penalty percentage btwn 1-10
-  //   bool true for safe mode saving, false for risk mode
-  // */
+  ///
+  /// createSaving
+  /// @payable
+  ///   Pay the amount to save to this function // todo: check for minimum value
+  /// @param:
+  ///   string nameOfSaving,
+  ///   uint256 timestamp of when savings should end
+  ///   uint8 value of penalty percentage btwn 1-10
+  ///   bool true for safe mode saving, false for risk mode
+  ///
   function createSaving(
     string memory nameOfSaving,
     uint256 maturityTime, // todo: add ft to check minimum time diff
@@ -225,19 +225,11 @@ contract Bitsave is zContract {
     address tokenToSave,
     uint amount
   ) internal registeredOnly {
-    require(block.timestamp < maturityTime, "Maturity time exceeded/invalid");
+    if (block.timestamp < maturityTime) revert BitsaveHelperLib.InvalidTime();
 
     address savingToken = tokenToSave;
-//    uint amountOfWeiSent;
+    // uint amountOfWeiSent;
     uint amountToSave = amount;
-    // // check if saving in native token
-    // if(tokenToSave == address(0)) {
-    //   amountToSave = msg.value;
-    // }else {
-    //   amountToSave = amount;
-    //   // using utility fn to transfer token from user
-    //   retrieveAmount(tokenToSave, amountToSave);
-    // }
 
     // functionality for creating savings
     if (safeMode) {
@@ -252,8 +244,8 @@ contract Bitsave is zContract {
     address userChildContractAddress = getUserChildContractAddress();
     userChildContract = UserContract(userChildContractAddress);
 
-    // call create savings for child contract
-    // move funds and call contract with it
+    /// call create savings for child contract
+    /// move funds and call contract with it
     uint actualSaving = BitsaveHelperLib.approveAmount(
       userChildContractAddress,
       amountToSave,
@@ -269,12 +261,12 @@ contract Bitsave is zContract {
     );
   }
 
-  //  /*
-  //  @payable
-  //    the amount to add to saving
-  //  @param:
-  //    string nameOfSaving
-  //  */
+  ///
+  ///  @payable
+  ///    the amount to add to saving
+  ///  @param:
+  ///    string nameOfSaving
+  ///
   function incrementSaving (
     string memory nameOfSavings,
     address tokenToRetrieve,
@@ -306,10 +298,10 @@ contract Bitsave is zContract {
     );
   }
 
-  //
-  // @param:
-  //    string nameOfSaving
-  //
+  ///
+  /// @param:
+  ///    string nameOfSaving
+  ///
   function withdrawSaving(
     string memory nameOfSavings
   ) public registeredOnly returns (bool) {

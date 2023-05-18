@@ -77,7 +77,7 @@ contract UserContract {
         amountToRetrieve
       );
       uint256 newBalance = address(this).balance;
-      require(currentBalance + amountToRetrieve <= newBalance, "Saving not withdrawn correctly");
+      if (currentBalance + amountToRetrieve <= newBalance) revert BitsaveHelperLib.AmountNotEnough();
     }
 
     function getSavings(string memory nameOfSaving) public view returns (SavingDataStruct memory) {
@@ -85,7 +85,6 @@ contract UserContract {
     }
 
     // functionality to create savings
-    // returns: uint interest accumulated
     function createSaving (
         string memory name,
         uint256 maturityTime,
@@ -96,9 +95,9 @@ contract UserContract {
     ) public payable bitsaveOnly returns (uint) {
         uint startTime = block.timestamp;
         // ensure saving does not exist; ! todo: this wont work
-        require(!savings[name].isValid, "Saving exists already");
+        if (!savings[name].isValid) revert BitsaveHelperLib.InvalidSaving();
         // check if end time valid
-        require(maturityTime > startTime, "Maturity time of saving must be in the future!");
+        if (maturityTime > startTime) revert BitsaveHelperLib.InvalidTime();
 
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae
@@ -123,14 +122,13 @@ contract UserContract {
     }
 
     // functionality to add to savings
-    // returns: uint interest accumulated
     function incrementSaving (
       string memory name,
       uint256 savingPlusAmount
     ) public payable bitsaveOnly returns (uint) {
         SavingDataStruct storage toFundSavings = savings[name];
-        require(toFundSavings.isValid, "Saving to fund does not exist");
-        require(block.timestamp > toFundSavings.maturityTime, "Sorry, saving has ended");
+        if (toFundSavings.isValid) revert BitsaveHelperLib.InvalidSaving();
+        if (block.timestamp > toFundSavings.maturityTime) revert BitsaveHelperLib.InvalidTime();
 
         // handle retrieving token from contract
         handleTokenRetrieving(
@@ -151,7 +149,7 @@ contract UserContract {
     function withdrawSaving (string memory name) public payable bitsaveOnly returns (string memory) {
         SavingDataStruct storage toWithdrawSavings = savings[name];
         // check if saving exit
-        require(toWithdrawSavings.isValid, "Saving to withdraw does not exist");
+        if (toWithdrawSavings.isValid) revert BitsaveHelperLib.InvalidSaving();
         uint amountToWithdraw;
         // check if saving is mature
         if (block.timestamp < toWithdrawSavings.maturityTime) {

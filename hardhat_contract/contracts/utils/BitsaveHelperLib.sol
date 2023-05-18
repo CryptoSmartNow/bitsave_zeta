@@ -8,6 +8,10 @@ library BitsaveHelperLib {
     // Errors
     error WrongGasContract();
     error NotEnoughToPayGasFee();
+    error AmountNotEnough();
+    error InvalidTime();
+    error UserNotRegistered();
+    error InvalidSaving();
 
     function approveAmount(
         address toApproveUserAddress,
