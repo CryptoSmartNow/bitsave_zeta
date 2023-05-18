@@ -2,30 +2,46 @@
 
 pragma solidity = 0.8.7;
 import "@zetachain/zevm-protocol-contracts/contracts/interfaces/IZRC20.sol";
+import "./BytesHelperLib.sol";
 
 library BitsaveHelperLib {
+    // Errors
+    error WrongGasContract();
+    error NotEnoughToPayGasFee();
 
-  // Errors
-  error WrongGasContract();
-  error NotEnoughToPayGasFee();
+    function approveAmount(
+        address toApproveUserAddress,
+        uint256 amountToApprove,
+        address targetToken
+      ) internal returns (uint256) {
+        (address gasZRC20, uint256 gasFee) = IZRC20(targetToken)
+          .withdrawGasFee();
 
-   function approveAmount(
-    address toApproveUserAddress,
-    uint256 amountToApprove,
-    address targetToken
-  ) internal returns (uint256) {
-    (address gasZRC20, uint256 gasFee) = IZRC20(targetToken)
-      .withdrawGasFee();
+          if (gasZRC20 != targetToken) revert WrongGasContract();
+          if (gasFee >= amountToApprove) revert NotEnoughToPayGasFee();
 
-      if (gasZRC20 != targetToken) revert WrongGasContract();
-      if (gasFee >= amountToApprove) revert NotEnoughToPayGasFee();
+          uint256 actualSaving = amountToApprove - gasFee;
 
-      uint256 actualSaving = amountToApprove - gasFee;
+          IZRC20(targetToken).approve(targetToken, gasFee);
+          IZRC20(targetToken).approve(toApproveUserAddress, actualSaving);
+          return actualSaving;
+      }
 
-      IZRC20(targetToken).approve(targetToken, gasFee);
-      IZRC20(targetToken).approve(toApproveUserAddress, actualSaving);
-      return actualSaving;
-  }
+    function transferToken(
+        address token,
+        address recipient,
+        uint amount
+    ) internal {
+        (address gasZRC20, uint256 gasFee) = IZRC20(token).withdrawGasFee();
+        // fix: uses gasFee * 2
+        if (gasFee * 2 > amount) revert NotEnoughToPayGasFee();
+        // convert address to Byte
+        IZRC20(token).withdraw(
+            BytesHelperLib.addressToBytes(recipient),
+            amount
+        );
+    }
+
 }
 
 // // receive the amount to swap

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.5;
-pragma abicoder v2;
+pragma solidity >=0.8.7;
 
 // Uniswap
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
@@ -63,21 +62,13 @@ contract Bitsave is zContract {
   // ********++++++ Subcontract ++++********
 
   constructor(
-//    ISwapRouter _swapRouter,
-//    address _router02,
     address _stableCoin,
     address systemContractAddress
   ) payable {
     // All constructor functions
-//    swapRouter = _swapRouter;
-//    router02 = _router02;
     stableCoin = _stableCoin;
     systemContract = SystemContract(systemContractAddress);
   }
-
-//  function getSwapRouter() public view returns(ISwapRouter) {
-//    return swapRouter;
-//  }
 
   function getStableCoin() public view returns(address) {
     return stableCoin;
@@ -89,26 +80,25 @@ contract Bitsave is zContract {
   ) internal {
     // -------token amount already approved from user
     // -------retrieveAmount from sender
-//    IERC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
     IZRC20(tokenToRetrieve).transferFrom(msg.sender, address(this), amountToRetrieve);
   }
 
-  // -------------------------------------------------------------
-  // Message definition
-  //  Address incoming
-  //  Amount sent of token
-  //  Encoded message:
-  //  - Opcode 
-  //  - Saving data per Opcode 
-  //  - Token data
-  //    Opcodes:
-  //    - Management utility
-  //      JON -> Join Bitsave
-  //    - Saving utility
-  //      CRT -> Create a saving
-  //      INC -> Increment a saving
-  //      WTD -> Withdraw a saving
-  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  /// -------------------------------------------------------------
+  /// Message definition
+  ///  Address incoming
+  ///  Amount sent of token
+  ///  Encoded message:
+  ///  - Opcode
+  ///  - Saving data per Opcode
+  ///  - Token data
+  ///    Opcodes:
+  ///    - Management utility
+  ///      JON -> Join Bitsave
+  ///    - Saving utility
+  ///      CRT -> Create a saving
+  ///      INC -> Increment a saving
+  ///      WTD -> Withdraw a saving
+  /// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   function onCrossChainCall (
     address zrc20,
     uint256 amount,

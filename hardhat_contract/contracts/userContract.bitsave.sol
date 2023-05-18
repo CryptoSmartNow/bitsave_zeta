@@ -52,17 +52,6 @@ contract UserContract {
         ownerAddress = payable(ownerAddress);
     }
 
-    function transferToken(
-        address token,
-        address recipient,
-        uint amount
-    ) internal {
-      (address gasZRC20, uint256 gasFee) = IZRC20(token).withdrawGasFee();
-      // todo: revert for wrong gas contract
-      if (gasFee > amount) revert BitsaveHelperLib.NotEnoughToPayGasFee();
-      IZRC20(token).transfer(recipient, amount);
-    }
-
     function retrieveToken(
         address toRetrieveFrom,
         address tokenToRetrieve,
@@ -193,7 +182,7 @@ contract UserContract {
                     ownerAddress
                 );
         }else {
-            transferToken(
+            BitsaveHelperLib.transferToken(
                 toWithdrawSavings.tokenId,
                 ownerAddress,
                 amountToWithdraw
