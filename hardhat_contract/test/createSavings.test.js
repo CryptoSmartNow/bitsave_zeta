@@ -2,7 +2,7 @@
 const {BigNumber} = require("ethers")
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
 const {expect} = require("chai")
-const {deployBitsaveFixture, childContractGenerate} = require("./bitsave.test")
+const {deployBitsaveFixture, childContractGenerate} = require("./bitsave.test_v1")
 const {USDC_ADDRESS, ONE_GWEI} = require("../constants/config");
 
 describe("Create savings", async()=>{

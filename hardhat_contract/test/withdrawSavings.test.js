@@ -1,7 +1,7 @@
 
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
 const {expect} = require("chai")
-const {deployBitsaveFixture} = require("./bitsave.test")
+const {deployBitsaveFixture} = require("./bitsave.test_v1")
 
 describe("Withdraw saving", ()=>{
     it("Should only allow bitsave protocol on child contract")
