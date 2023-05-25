@@ -16,8 +16,8 @@ library BytesHelperLib {
         }
     }
 
-    function addressToBytes(address someAddress) internal pure returns (bytes32) {
-        return bytes32(uint256(uint160(someAddress)));
+    function addressToBytes(address someAddress) internal pure returns (bytes memory) {
+        return new bytes(uint256(uint160(someAddress)));
     }
 
     function compareStrings(bytes memory b1, string memory s2) internal pure returns (bool) {

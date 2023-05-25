@@ -28,6 +28,11 @@ library BitsaveHelperLib {
     event SavingWithdrawn(
         string nameOfSaving
     );
+    event TokenWithdrawal(
+        address indexed from,
+        bytes to,
+        uint amount
+    );
 
     function approveAmount(
         address toApproveUserAddress,
@@ -55,18 +60,19 @@ library BitsaveHelperLib {
         address recipient,
         uint amount
     ) internal {
-        (address gasZRC20, uint256 gasFee) = IZRC20(token).withdrawGasFee();
+        IZRC20 Token = IZRC20(token);
+        (address gasZRC20, uint256 gasFee) = Token.withdrawGasFee();
         gasFee = gasFee * 2;
         // fix: uses gasFee * 2
         if (gasFee > amount) revert NotEnoughToPayGasFee();
         // convert address to Byte
-        bytes userAddressBytes = BytesHelperLib.addressToBytes(recipient);
-        IZRC20(token).withdraw(
+        bytes memory userAddressBytes = BytesHelperLib.addressToBytes(recipient);
+        Token.withdraw(
             userAddressBytes,
             amount
         );
 
-        emit IZRC20(token).Withdrawal(
+        emit TokenWithdrawal(
             address(this),
             userAddressBytes,
             amount

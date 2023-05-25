@@ -172,7 +172,7 @@ contract Bitsave is zContract {
     SwapHelperLib._doWithdrawal(
       targetToken,
       outputAmount,
-      BytesHelperLib.addressToBytes(address(this)) // todo: can pay directly
+      bytes32(BytesHelperLib.addressToBytes(address(this))) // todo: can pay directly
     );
     return outputAmount;
   }
@@ -208,9 +208,9 @@ contract Bitsave is zContract {
 
   ///
   /// createSaving
-  /// @payable
+  ///
   ///   Pay the amount to save to this function // todo: check for minimum value
-  /// @param:
+  ///
   ///   string nameOfSaving,
   ///   uint256 timestamp of when savings should end
   ///   uint8 value of penalty percentage btwn 1-10
@@ -262,9 +262,9 @@ contract Bitsave is zContract {
   }
 
   ///
-  ///  @payable
+  ///
   ///    the amount to add to saving
-  ///  @param:
+  ///
   ///    string nameOfSaving
   ///
   function incrementSaving (
@@ -299,7 +299,7 @@ contract Bitsave is zContract {
   }
 
   ///
-  /// @param:
+  ///
   ///    string nameOfSaving
   ///
   function withdrawSaving(
