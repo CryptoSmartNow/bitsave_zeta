@@ -1,7 +1,7 @@
 
 const {loadFixture, time} = require("@nomicfoundation/hardhat-network-helpers")
 const {expect} = require("chai")
-const {deployBitsaveFixture} = require("./bitsave.test")
+const {deployBitsaveFixture} = require("./bitsave.test_v1")
 const {USDC_ADDRESS, ONE_GWEI} = require("../constants/config");
 
 describe("Increment savings", ()=>{
