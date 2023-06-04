@@ -31,6 +31,15 @@ async function deployBitsaveFixture() {
     }
 }
 
+const childContractGenerate = async (childAddress) => {
+    const BitsaveChild = await ethers
+        .getContractFactory("UserContract")
+
+    return {
+        bitsaveChild: BitsaveChild.attach(childAddress)
+    }
+}
+
 module.exports = {
     deployBitsaveFixture
 }
