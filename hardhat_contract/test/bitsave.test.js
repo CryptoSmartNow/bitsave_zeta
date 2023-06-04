@@ -6,6 +6,7 @@ const {USDC_ADDRESS} = require("../constants/config");
 const {SYSTEM_CONTRACT} = require("../scripts/deploy");
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
 const {deployBitsaveFixture} = require("./utils/generator")
+const BitsaveLibrary = require("../artifacts/contracts/utils/BitsaveHelperLib.sol/BitsaveHelperLib.json")
 
 
 describe("Bitsave zetachain v2", () => {
@@ -45,7 +46,15 @@ describe("Bitsave zetachain v2", () => {
     // })
 
     describe("Authentication", () => {
-        it('Should revert if fee not balanced');
+        it('Should revert if fee not balanced', async function() {
+            const {bitsave, otherAccount} = await loadFixture(deployBitsaveFixture);
+
+            await expect(
+                bitsave
+                    .connect(otherAccount)
+                    .joinBitsave({value: 7_500})
+            ).to.be.revertedWithCustomError(bitsave, "AmountNotEnough")
+        });
 
         it('should join bitsave and return child address', async function () {
             const {bitsave, otherAccount} = await loadFixture(deployBitsaveFixture);
