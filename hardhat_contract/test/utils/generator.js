@@ -11,18 +11,16 @@ async function deployBitsaveFixture() {
         SYSTEM_CONTRACT
     );
     await bitsave.deployed();
-    console.log("sck")
 
     // Register toBeRegisteredUser
     await bitsave
         .connect(toBeRegisteredAccount)
-        .joinBitsave({value: 10_000});
+        .joinBitsave({value: 10_500});
 
-    console.log("here")
 
     const reg_userChildAddress = await bitsave
         .connect(toBeRegisteredAccount)
-        .getUserChildContractAddress(); // might need to use public fns generated
+        .getUserChildContractAddress();
 
     return {
         bitsave,

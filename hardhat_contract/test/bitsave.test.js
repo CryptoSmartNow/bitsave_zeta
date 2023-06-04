@@ -1,4 +1,5 @@
 const {ethers, network} = require("hardhat");
+const {expect} = require("chai")
 const {parseUnits} = require("@ethersproject/units");
 const {getAddress: getAddressLib} = require("@zetachain/addresses")
 const {USDC_ADDRESS} = require("../constants/config");
@@ -6,7 +7,8 @@ const {SYSTEM_CONTRACT} = require("../scripts/deploy");
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
 const {deployBitsaveFixture} = require("./utils/generator")
 
-describe("Bitsave zetachain v2", ()=>{
+
+describe("Bitsave zetachain v2", () => {
     let zetaSwapV2Contract;
     let ZRC20Contracts;
     let systemContract;
@@ -42,82 +44,61 @@ describe("Bitsave zetachain v2", ()=>{
     //     // const evmSetup = await evmSetup
     // })
 
-    it('should join bitsave', async function () {
-        const {bitsave} = await loadFixture(deployBitsaveFixture);
+    describe("Authentication", () => {
+        it('Should revert if fee not balanced');
 
-    });
-    
-    describe('CREATE SAVING', ()=>{
-        it('should create saving', function () {
-            
-        });
+        it('should join bitsave and return child address', async function () {
+            const {bitsave, otherAccount} = await loadFixture(deployBitsaveFixture);
 
-        it('should reduce balance of user', function () {
-            
-        });
+            await bitsave
+                .connect(otherAccount)
+                .joinBitsave({value: 10_500})
 
-        it('should save risk mode and use exact token', function () {
-            
-        });
+            const addressOfChildContract = await bitsave
+                .connect(otherAccount)
+                .getUserChildContractAddress();
 
-        it('should convert token to stableCoin for safe mode', function () {
-            
-        });
-
-        it('should avoid invalid timestamp', function () {
-            
-        });
-
-        it('should avoid invalid data', function () {
-            
-        });
-
-        it('should prevent overwriting saving data', function () {
-            
-        });
-
-        it('should emit event for creating saving', function () {
-            
+            expect(addressOfChildContract).to.be.a.properAddress
         });
     })
 
+    describe('CREATE SAVING', () => {
+        it('should create saving');
+
+        it('should reduce balance of user');
+
+        it('should save risk mode and use exact token');
+
+        it('should convert token to stableCoin for safe mode');
+
+        it('should avoid invalid timestamp');
+
+        it('should avoid invalid data');
+
+        it('should prevent overwriting saving data');
+
+        it('should emit event for creating saving');
+    })
+
     describe('INCREMENT SAVING', function () {
-        it('should add to saving', function () {
-            
-        });
+        it('should add to saving');
 
-        it('should ensure saving mode', function () {
-            
-        });
+        it('should ensure saving mode');
 
-        it('should properly edit data', function () {
-            
-        });
+        it('should properly edit data');
 
-        it('should emit event for incrementing saving', function () {
-            
-        });
+        it('should emit event for incrementing saving');
     });
 
     describe('WITHDRAW SAVING', function () {
-        it('should withdraw user\'s saving', function () {
-            
-        });
+        it('should withdraw user\'s saving');
 
-        it('should withdraw original token', function () {
-            
-        });
+        it('should withdraw original token');
 
-        it('should invalidate saving after withdrawal', function () {
-            
-        });
+        it('should invalidate saving after withdrawal');
 
-        it('should change value of saving to null', function () {
-            
-        });
+        it('should change value of saving to null');
 
-        it('should emit event for withdrawal', function () {
-            
-        });
+        it('should emit event for withdrawal');
     });
 })
