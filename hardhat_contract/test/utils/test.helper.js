@@ -1,7 +1,7 @@
-import { MaxUint256 } from "@ethersproject/constants";
-import { parseUnits } from "@ethersproject/units";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { ethers } from "hardhat";
+const { MaxUint256 } = require("@ethersproject/constants");
+const { parseUnits } = require("@ethersproject/units");
+const { SignerWithAddress } = require("@nomiclabs/hardhat-ethers/signers");
+const { ethers } = require("hardhat");
 
 const addZetaEthLiquidity = async (
   signer,
@@ -30,7 +30,7 @@ const addZetaEthLiquidity = async (
   await tx2.wait();
 };
 
-export const evmSetup = async (
+const evmSetup = async (
   wGasToken,
   uniswapFactoryAddr,
   uniswapRouterAddr
@@ -79,3 +79,7 @@ export const evmSetup = async (
 
   return { ZRC20Contracts, systemContract };
 };
+
+module.exports = {
+  evmSetup
+}

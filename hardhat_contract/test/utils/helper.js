@@ -1,12 +1,12 @@
-import {BigNumber} from "@ethersproject/bignumber";
-import {ethers} from "hardhat";
+const {BigNumber} = require("@ethersproject/bignumber");
+const {ethers} = require("hardhat");
 
-export const encodeParams = (dataTypes, data) => {
+const encodeParams = (dataTypes, data) => {
     const abiCoder = ethers.utils.defaultAbiCoder;
     return abiCoder.encode(dataTypes, data);
 }
 
-export const getSwapParams = (
+const getSwapParams = (
   destination,
   destinationToken,
   minOutput
@@ -21,3 +21,8 @@ export const getSwapParams = (
 
   return params;
 };
+
+module.exports = {
+    encodeParams,
+    getSwapParams
+}

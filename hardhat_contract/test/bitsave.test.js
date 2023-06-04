@@ -1,6 +1,10 @@
-import {ethers, network} from "hardhat";
-import {parseUnits} from "@ethersproject/units";
-import {getAddress as getAddressLib} from "@zetachain/addresses"
+const {ethers, network} = require("hardhat");
+const {parseUnits} = require("@ethersproject/units");
+const {getAddress: getAddressLib} = require("@zetachain/addresses")
+const {USDC_ADDRESS} = require("../constants/config");
+const {SYSTEM_CONTRACT} = require("../scripts/deploy");
+const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
+const {deployBitsaveFixture} = require("./utils/generator")
 
 describe("Bitsave zetachain v2", ()=>{
     let zetaSwapV2Contract;
@@ -10,36 +14,37 @@ describe("Bitsave zetachain v2", ()=>{
     let accounts;
     let deployer;
 
-    beforeEach(async ()=>{
-        accounts = await ethers.getSigners();
-        // fetch one deployer
-        [deployer] = accounts;
+    // beforeEach(async ()=>{
+    //     accounts = await ethers.getSigners();
+    //     // fetch one deployer
+    //     [deployer] = accounts;
+    //
+    //     await network.provider.send(
+    //         "hardhat_setBalance",
+    //         [
+    //             deployer.address,
+    //             parseUnits("1000000").toHexString()
+    //         ]
+    //     )
+    //
+    //     const uniswapRouterAddr = getAddressLib({
+    //         address: "uniswapV2Router02",
+    //         networkName: "eth-mainnet",
+    //         zetaNetwork: "mainnet"
+    //     })
+    //
+    //     const uniswapFactoryAddr = getAddressLib({
+    //       address: "uniswapV2Factory",
+    //       networkName: "eth-mainnet",
+    //       zetaNetwork: "mainnet",
+    //     });
+    //
+    //     // const evmSetup = await evmSetup
+    // })
 
-        await network.provider.send(
-            "hardhat_setBalance",
-            [
-                deployer.address,
-                parseUnits("1000000").toHexString()
-            ]
-        )
+    it('should join bitsave', async function () {
+        const {bitsave} = await loadFixture(deployBitsaveFixture);
 
-        const uniswapRouterAddr = getAddressLib({
-            address: "uniswapV2Router02",
-            networkName: "eth-mainnet",
-            zetaNetwork: "mainnet"
-        })
-
-        const uniswapFactoryAddr = getAddressLib({
-          address: "uniswapV2Factory",
-          networkName: "eth-mainnet",
-          zetaNetwork: "mainnet",
-        });
-
-        const evmSetup = await evmSetup
-    })
-
-    it('should join bitsave', function () {
-        
     });
     
     describe('CREATE SAVING', ()=>{

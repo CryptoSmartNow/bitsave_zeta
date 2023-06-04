@@ -6,9 +6,10 @@ import "hardhat/console.sol";
 import "./Bitsave.sol";
 
 // Zetaprotocols
-import "@zetachain/zevm-protocol-contracts/contracts/interfaces/IZRC20.sol";
-import "@zetachain/zevm-protocol-contracts/contracts/system/SystemContract.sol";
-import "@zetachain/zevm-protocol-contracts/contracts/interfaces/zContract.sol";
+// Zetaprotocols
+import "@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol";
+import "@zetachain/protocol-contracts/contracts/zevm/interfaces/zContract.sol";
+import "@zetachain/protocol-contracts/contracts/zevm/SystemContract.sol";
 
 import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
 import "./utils/BitsaveHelperLib.sol";
