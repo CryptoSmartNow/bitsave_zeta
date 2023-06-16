@@ -41,5 +41,6 @@ const childContractGenerate = async (childAddress) => {
 }
 
 module.exports = {
-    deployBitsaveFixture
+    deployBitsaveFixture,
+    childContractGenerate
 }

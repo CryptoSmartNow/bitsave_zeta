@@ -4,10 +4,8 @@ const {parseUnits} = require("@ethersproject/units");
 const {getAddress: getAddressLib} = require("@zetachain/addresses")
 const {USDC_ADDRESS} = require("../constants/config");
 const {SYSTEM_CONTRACT} = require("../scripts/deploy");
-const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
-const {deployBitsaveFixture} = require("./utils/generator")
-const BitsaveLibrary = require("../artifacts/contracts/utils/BitsaveHelperLib.sol/BitsaveHelperLib.json")
-
+const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers");
+const {deployBitsaveFixture} = require("./utils/generator");
 
 describe("Bitsave zetachain v2", () => {
     let zetaSwapV2Contract;
