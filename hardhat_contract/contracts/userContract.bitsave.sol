@@ -98,7 +98,7 @@ contract UserContract {
         // ensure saving does not exist; ! todo: this wont work
         if (savings[name].isValid) revert BitsaveHelperLib.InvalidSaving();
         // check if end time valid
-        if (maturityTime > startTime) revert BitsaveHelperLib.InvalidTime();
+        if (maturityTime < startTime) revert BitsaveHelperLib.InvalidTime();
 
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae
