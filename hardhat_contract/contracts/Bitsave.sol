@@ -110,6 +110,7 @@ contract Bitsave is zContract {
       // saving data,
       string memory nameOfSaving,
       uint256 maturityTime,
+      uint256 startTime,
       uint8 penaltyPercentage,
       bool safeMode
       // token data
@@ -118,6 +119,7 @@ contract Bitsave is zContract {
       (
         bytes,
         string,
+        uint256,
         uint256,
         uint8,
         bool
@@ -138,6 +140,7 @@ contract Bitsave is zContract {
       createSaving(
         nameOfSaving,
         maturityTime,
+        startTime,
         penaltyPercentage,
         safeMode,
         zrc20,
@@ -182,7 +185,6 @@ contract Bitsave is zContract {
       0
     );
     bytes32 thisAddress = BytesHelperLib.addressToBytes(address(this));
-    console.log(targetToken);
     SwapHelperLib._doWithdrawal(
       targetToken,
       outputAmount,
@@ -234,7 +236,8 @@ contract Bitsave is zContract {
   ///
   function createSaving(
     string memory nameOfSaving,
-    uint256 maturityTime, // todo: add ft to check minimum time diff
+    uint256 maturityTime,
+    uint256 startTime,
     uint8 penaltyPercentage,
     // safe/risk mode
     bool safeMode,
@@ -267,9 +270,11 @@ contract Bitsave is zContract {
       amountToSave,
       savingToken
     );
+
     userChildContract.createSaving(
       nameOfSaving,
       maturityTime,
+      startTime,
       penaltyPercentage,
       savingToken,
       actualSaving,

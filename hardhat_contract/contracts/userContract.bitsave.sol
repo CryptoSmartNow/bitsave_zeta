@@ -89,16 +89,17 @@ contract UserContract {
     function createSaving (
         string memory name,
         uint256 maturityTime,
+        uint256 startTime,
         uint8 penaltyPercentage,
         address tokenId,
         uint256 amountToRetrieve,
         bool isSafeMode
     ) public payable bitsaveOnly returns (uint) {
-        uint startTime = block.timestamp;
         // ensure saving does not exist; ! todo: this wont work
         if (savings[name].isValid) revert BitsaveHelperLib.InvalidSaving();
         // check if end time valid
         if (maturityTime < startTime) revert BitsaveHelperLib.InvalidTime();
+        if (maturityTime < block.timestamp) revert BitsaveHelperLib.InvalidTime();
 
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae

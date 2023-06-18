@@ -3,7 +3,7 @@ const {ethers} = require("hardhat");
 const Opcodes = require("./constants");
 // const {encodeParams} = require("@zetachain/zevm-example-contracts/scripts/zeta-swap/helpers");
 
-const paramTypes = ["bytes", "string", "uint256", "uint8", "bool"]
+const paramTypes = ["bytes", "string", "uint256", "uint256", "uint8", "bool"]
 
 const encodeParams = (dataTypes, data) => {
     return ethers.utils.defaultAbiCoder.encode(dataTypes, data);
@@ -34,13 +34,14 @@ function getJoinParams() {
 
     return encodeParams(
         paramTypes,
-        [paddedOpcode, "none", 0, 0, false]
+        [paddedOpcode, "none", 0, 0, 0, false]
     )
 }
 
 const getSavingParams = (
     nameOfSaving,
     maturityTimestamp,
+    startTime,
     penaltyPercentage,
     safeMode
 ) => {
@@ -48,7 +49,13 @@ const getSavingParams = (
 
     return encodeParams(
         paramTypes,
-        [paddedOpcode, nameOfSaving, maturityTimestamp, penaltyPercentage, safeMode]
+        [
+            paddedOpcode,
+            nameOfSaving,
+            maturityTimestamp,
+            startTime, penaltyPercentage,
+            safeMode
+        ]
     )
 }
 
@@ -59,7 +66,7 @@ const getIncrementParams = (
 
     return encodeParams(
         paramTypes,
-        [paddedOpcode, nameOfSaving, 0, 0, false]
+        [paddedOpcode, nameOfSaving, 0, 0, 0, false]
     )
 }
 

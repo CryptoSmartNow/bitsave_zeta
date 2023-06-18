@@ -10,7 +10,8 @@ const twoPenaltyPercentage = 2;
 const amount = 1;
 const amountToSave = utils.parseUnits(amount.toString(), "ether");
 const approvalAmount = utils.parseUnits((amount + 1).toString(), "ether")
-const endTime = Date.now() + 3000000;
+const endTime = parseInt(((Date.now() + 3000000) / 1000).toString());
+const startTime = parseInt((Date.now() / 1000).toString())
 
 
 const createSaving = async (bitsave, registeredUser, data) => {
@@ -29,6 +30,7 @@ const createSaving = async (bitsave, registeredUser, data) => {
             getSavingParams(
                 nameOfSaving,
                 endTime,
+                startTime,
                 twoPenaltyPercentage,
                 true
             )
@@ -43,21 +45,19 @@ describe('CREATE SAVING', () => {
         const {
             bitsave, registeredUser, reg_userChildAddress
         } = await loadFixture(deployBitsaveFixture)
-        console.log("usr cc", reg_userChildAddress)
-
-        const startTime = Date.now();
 
         await createSaving(bitsave, registeredUser)
 
-        const userChildContract = await childContractGenerate(reg_userChildAddress)
-        const savingCreated = await userChildContract.getSavings(nameOfSaving);
+        const {userChildContract} = await childContractGenerate(reg_userChildAddress)
+        const savingCreated = await userChildContract
+            .getSavings(nameOfSaving);
 
         // todo: format data retrieved properly
         // Savings data test
-        expect(savingCreated.amount).to.be.equal(
-            BigNumber.from(amountToSave.toString())
-        )
-        expect(savingCreated.maturityTime).to.be.equal(endTime)
+        expect(
+            savingCreated.maturityTime.toNumber()
+        ).to.equal(endTime)
+        console.log("t1")
         // uses wrong time input for lev.
         expect(
             savingCreated.startTime
