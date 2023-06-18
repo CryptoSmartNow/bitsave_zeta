@@ -2,18 +2,12 @@ const {ethers, network} = require("hardhat");
 const {expect} = require("chai")
 const {parseUnits} = require("@ethersproject/units");
 const {getAddress: getAddressLib} = require("@zetachain/addresses")
-const {USDC_ADDRESS} = require("../constants/config");
-const {SYSTEM_CONTRACT} = require("../scripts/deploy");
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers");
 const {deployBitsaveFixture} = require("./utils/generator");
+const {getJoinParams} = require("./utils/helper");
 
 describe("Bitsave zetachain v2", () => {
-    let zetaSwapV2Contract;
-    let ZRC20Contracts;
-    let systemContract;
-
-    let accounts;
-    let deployer;
+    const JoinFee = 100;
 
     // beforeEach(async ()=>{
     //     accounts = await ethers.getSigners();
@@ -45,25 +39,45 @@ describe("Bitsave zetachain v2", () => {
 
     describe("Authentication", () => {
         it('Should revert if fee not balanced', async function() {
-            const {bitsave, otherAccount} = await loadFixture(deployBitsaveFixture);
+            const {bitsave, otherAccount, ZRC20Contracts} = await loadFixture(deployBitsaveFixture);
+            const paymentToken = ZRC20Contracts[0]
+
+            await paymentToken
+            .connect(otherAccount)
+            .approve(bitsave.address, parseUnits(JoinFee.toString()))
 
             await expect(
                 bitsave
-                    .connect(otherAccount)
-                    .joinBitsave({value: 7_500})
+                .connect(otherAccount)
+                .onCrossChainCall(
+                    paymentToken.address,
+                    10,
+                    getJoinParams(),
+                )
             ).to.be.revertedWithCustomError(bitsave, "AmountNotEnough")
         });
 
         it('should join bitsave and return child address', async function () {
-            const {bitsave, otherAccount} = await loadFixture(deployBitsaveFixture);
+            const {bitsave, otherAccount, ZRC20Contracts} = await loadFixture(deployBitsaveFixture);
+            const paymentToken = ZRC20Contracts[0]
+
+            await paymentToken
+            .connect(otherAccount)
+            .approve(bitsave.address, parseUnits(JoinFee.toString()))
 
             await bitsave
                 .connect(otherAccount)
-                .joinBitsave({value: 10_500})
+                .onCrossChainCall(
+                    paymentToken.address,
+                    parseUnits(JoinFee.toString()),
+                    getJoinParams(),
+                )
 
             const addressOfChildContract = await bitsave
                 .connect(otherAccount)
                 .getUserChildContractAddress();
+
+            console.log(addressOfChildContract, "cc addr")
 
             expect(addressOfChildContract).to.be.a.properAddress
         });

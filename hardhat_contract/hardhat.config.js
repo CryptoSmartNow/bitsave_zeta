@@ -21,7 +21,8 @@ const config = {
   },
   networks: {
     ...getHardhatConfigNetworks(PRIVATE_KEY)
-  }
+  },
+  gas: 1800000,
 };
 
 module.exports = config;

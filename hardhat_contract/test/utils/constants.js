@@ -6,4 +6,4 @@ const Opcodes = {
     WITHDRAW: "WTD"
 }
 
-export default Opcodes
+module.exports = Opcodes

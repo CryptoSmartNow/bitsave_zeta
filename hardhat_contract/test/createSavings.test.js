@@ -1,43 +1,53 @@
-
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
-const {BigNumber} = require("ethers")
+const {BigNumber, utils} = require("ethers")
 const {expect} = require("chai")
+const {ONE_GWEI} = require("../constants/config")
 const {deployBitsaveFixture, childContractGenerate} = require("./utils/generator")
+const {getSavingParams} = require("./utils/helper");
+
+const nameOfSaving = "school"
+const twoPenaltyPercentage = 2;
+const amount = 1;
+const amountToSave = utils.parseUnits(amount.toString(), "ether");
+const approvalAmount = utils.parseUnits((amount + 1).toString(), "ether")
+const endTime = Date.now() + 3000000;
+
+
+const createSaving = async (bitsave, registeredUser, data) => {
+    const {ZRC20Contracts} = await loadFixture(deployBitsaveFixture)
+    const PaymentContract = ZRC20Contracts[0];
+
+    await PaymentContract
+        .connect(registeredUser)
+        .approve(bitsave.address, approvalAmount)
+
+    await bitsave
+        .connect(registeredUser)
+        .onCrossChainCall(
+            PaymentContract.address,
+            amountToSave,
+            getSavingParams(
+                nameOfSaving,
+                endTime,
+                twoPenaltyPercentage,
+                true
+            )
+        )
+}
 
 describe('CREATE SAVING', () => {
 
-    const nameOfSaving = "school"
-    const twoPenaltyPercentage = 2;
-    const amountToSave = 3 * ONE_GWEI;
-    const endTime = Date.now() + 300_000;
-
-    const createSaving = async (bitsave, data) => {
-        await bitsave
-            .connect(registeredUser)
-            .onCrossChainCall(
-                "",
-                amountToSave,
-                "" // parser to parse message
-            )
-    }
-
     it('should revert if user not registered');
 
-    it('should create saving', async()=>{
+    it('should create saving', async () => {
         const {
             bitsave, registeredUser, reg_userChildAddress
         } = await loadFixture(deployBitsaveFixture)
+        console.log("usr cc", reg_userChildAddress)
 
         const startTime = Date.now();
-        const tokenAddress = ""
 
-        await bitsave
-            .connect(registeredUser)
-            .onCrossChainCall(
-                "",
-                amountToSave,
-                "" // parser to parse message
-            )
+        await createSaving(bitsave, registeredUser)
 
         const userChildContract = await childContractGenerate(reg_userChildAddress)
         const savingCreated = await userChildContract.getSavings(nameOfSaving);
@@ -49,16 +59,18 @@ describe('CREATE SAVING', () => {
         )
         expect(savingCreated.maturityTime).to.be.equal(endTime)
         // uses wrong time input for lev.
-        expect(savingCreated.tokenId).to.be.equal(tokenAddress.toString())
+        expect(
+            savingCreated.startTime
+        ).to.be.equal(startTime)
     });
 
-    it('should reduce balance of user', async function() {
+    it('should reduce balance of user', async function () {
         const {bitsave, registeredUser, reg_userChildAddress}
             = await loadFixture(deployBitsaveFixture)
 
         const userInitialBalance = registeredUser.getBalance()
 
-        // await createSavings
+        await createSaving(bitsave, registeredUser)
 
         expect(
             parseInt(userInitialBalance.toString())
@@ -67,7 +79,7 @@ describe('CREATE SAVING', () => {
         )
     });
 
-    it('should save risk mode and use exact token', async function() {
+    it('should save risk mode and use exact token', async function () {
         const {bitsave, reg_userChildAddress} = await loadFixture(deployBitsaveFixture)
 
         // await create savings with risk mode
@@ -78,7 +90,7 @@ describe('CREATE SAVING', () => {
 
     });
 
-    it('should convert token to stableCoin for safe mode', async function() {
+    it('should convert token to stableCoin for safe mode', async function () {
         const {bitsave, reg_userChildAddress} = await loadFixture(deployBitsaveFixture)
 
         // await create savings with safe mode

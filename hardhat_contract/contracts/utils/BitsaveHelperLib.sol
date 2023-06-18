@@ -66,7 +66,8 @@ library BitsaveHelperLib {
         // fix: uses gasFee * 2
         if (gasFee > amount) revert NotEnoughToPayGasFee();
         // convert address to Byte
-        bytes memory userAddressBytes = BytesHelperLib.addressToBytes(recipient);
+        bytes32 userAddressBytes32 = BytesHelperLib.addressToBytes(recipient);
+        bytes memory userAddressBytes = BytesHelperLib.bytes32ToBytes(userAddressBytes32);
         Token.withdraw(
             userAddressBytes,
             amount

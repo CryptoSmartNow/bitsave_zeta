@@ -1,17 +1,19 @@
 const {BigNumber} = require("@ethersproject/bignumber");
 const {ethers} = require("hardhat");
 const Opcodes = require("./constants");
-const {encodeParams} = require("@zetachain/zevm-example-contracts/scripts/zeta-swap/helpers");
+// const {encodeParams} = require("@zetachain/zevm-example-contracts/scripts/zeta-swap/helpers");
 
-const paramTypes = ["bytes32", "string", "uint256", "uint8", "bool"]
+const paramTypes = ["bytes", "string", "uint256", "uint8", "bool"]
 
 const encodeParams = (dataTypes, data) => {
     return ethers.utils.defaultAbiCoder.encode(dataTypes, data);
 }
 
-const makeOpcode = (opcode) => ethers.utils.hexlify(
-    ethers.utils.zeroPad(opcode)
-)
+// const makeOpcode = (opcode) => ethers.utils.hexlify(
+//     ethers.utils.zeroPad(opcode)
+// )
+
+const makeOpcode = (opcode) => ethers.utils.toUtf8Bytes(opcode)
 
 const getSwapParams = (
     destination,
@@ -21,12 +23,10 @@ const getSwapParams = (
     const paddedDestination = ethers.utils.hexlify(
         ethers.utils.zeroPad(destination, 32)
     );
-    const params = encodeParams(
+    return encodeParams(
         ["address", "bytes32", "uint256"],
         [destinationToken, paddedDestination, minOutput]
     );
-
-    return params;
 };
 
 function getJoinParams() {
@@ -34,7 +34,7 @@ function getJoinParams() {
 
     return encodeParams(
         paramTypes,
-        [paddedOpcode, "", 0, 0, false]
+        [paddedOpcode, "none", 0, 0, false]
     )
 }
 
@@ -52,9 +52,21 @@ const getSavingParams = (
     )
 }
 
+const getIncrementParams = (
+    nameOfSaving
+) => {
+    const paddedOpcode = makeOpcode(Opcodes.INCREMENT)
+
+    return encodeParams(
+        paramTypes,
+        [paddedOpcode, nameOfSaving, 0, 0, false]
+    )
+}
+
 module.exports = {
     encodeParams,
     getSwapParams,
     getJoinParams,
-    getSavingParams
+    getSavingParams,
+    getIncrementParams
 }

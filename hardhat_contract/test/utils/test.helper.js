@@ -2,6 +2,7 @@ const { MaxUint256 } = require("@ethersproject/constants");
 const { parseUnits } = require("@ethersproject/units");
 const { SignerWithAddress } = require("@nomiclabs/hardhat-ethers/signers");
 const { ethers } = require("hardhat");
+const {UniswapV2Router02__factory} = require("@zetachain/protocol-contracts");
 
 const addZetaEthLiquidity = async (
   signer,
