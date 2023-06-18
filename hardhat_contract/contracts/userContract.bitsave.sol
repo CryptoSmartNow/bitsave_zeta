@@ -96,7 +96,7 @@ contract UserContract {
     ) public payable bitsaveOnly returns (uint) {
         uint startTime = block.timestamp;
         // ensure saving does not exist; ! todo: this wont work
-        if (!savings[name].isValid) revert BitsaveHelperLib.InvalidSaving();
+        if (savings[name].isValid) revert BitsaveHelperLib.InvalidSaving();
         // check if end time valid
         if (maturityTime > startTime) revert BitsaveHelperLib.InvalidTime();
 

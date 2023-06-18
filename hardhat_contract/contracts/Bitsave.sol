@@ -181,10 +181,12 @@ contract Bitsave is zContract {
       targetToken,
       0
     );
+    bytes32 thisAddress = BytesHelperLib.addressToBytes(address(this));
+    console.log(targetToken);
     SwapHelperLib._doWithdrawal(
       targetToken,
       outputAmount,
-      bytes32(BytesHelperLib.addressToBytes(address(this))) // todo: can pay directly
+      bytes32(thisAddress) // todo: can pay directly
     );
     return outputAmount;
   }

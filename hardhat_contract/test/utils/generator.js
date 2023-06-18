@@ -45,9 +45,10 @@ async function deployBitsaveFixture() {
     const amount = parseUnits("1000")
     await ZRC20Contracts[0].transfer(toBeRegisteredAccount.address, amount);
     await ZRC20Contracts[0].transfer(otherAccount.address, amount);
+    const stableCoin = ZRC20Contracts[1]
 
     const bitsave = await factoryBitsave.deploy(
-        USDC_ADDRESS,
+        stableCoin.address,
         systemContract.address
     );
     await bitsave.deployed();
@@ -97,7 +98,8 @@ async function deployBitsaveFixture() {
         registeredUser: toBeRegisteredAccount,
         reg_userChildAddress,
         otherAccount,
-        ZRC20Contracts
+        ZRC20Contracts,
+        stableCoin
     }
 }
 
