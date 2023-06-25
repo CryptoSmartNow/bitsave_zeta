@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity = 0.8.7;
-import "@zetachain/zevm-protocol-contracts/contracts/interfaces/IZRC20.sol";
+import "@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol";
 import "./BytesHelperLib.sol";
 
 library BitsaveHelperLib {
@@ -66,7 +66,8 @@ library BitsaveHelperLib {
         // fix: uses gasFee * 2
         if (gasFee > amount) revert NotEnoughToPayGasFee();
         // convert address to Byte
-        bytes memory userAddressBytes = BytesHelperLib.addressToBytes(recipient);
+        bytes32 userAddressBytes32 = BytesHelperLib.addressToBytes(recipient);
+        bytes memory userAddressBytes = BytesHelperLib.bytes32ToBytes(userAddressBytes32);
         Token.withdraw(
             userAddressBytes,
             amount

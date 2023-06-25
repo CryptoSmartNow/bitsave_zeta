@@ -16,8 +16,8 @@ library BytesHelperLib {
         }
     }
 
-    function addressToBytes(address someAddress) internal pure returns (bytes memory) {
-        return new bytes(uint256(uint160(someAddress)));
+    function addressToBytes(address someAddress) internal pure returns (bytes32) {
+        return bytes32(uint256(uint160(someAddress)));
     }
 
     function compareStrings(bytes memory b1, string memory s2) internal pure returns (bool) {
@@ -28,6 +28,10 @@ library BytesHelperLib {
             if (b1[i] != b2[i]) return false;
         }
         return true;
+    }
+
+    function bytes32ToBytes(bytes32 data) internal pure returns (bytes memory) {
+        return abi.encodePacked(data);
     }
 }
 

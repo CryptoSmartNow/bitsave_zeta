@@ -1,13 +1,11 @@
-import { BigNumber } from "@ethersproject/bignumber";
-import { parseUnits } from "@ethersproject/units";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import {getAddress as getAddressLib} from "@zetachain/addresses";
-import { expect } from "chai";
-import { ethers, network } from "hardhat";
+const {parseUnits} = require("@ethersproject/units");
+const {getAddress: getAddressLib} = require("@zetachain/addresses");
+const {ethers, network} = require("hardhat");
+
 const {USDC_ADDRESS, ROUTERADDRESS, ONE_GWEI} = require("../constants/config")
 
 
-describe("Bitsave test", ()=>{
+describe("Bitsave test", () => {
     let BitsaveContract;
     let ZRC20Contracts;
     let systemContract;
@@ -15,7 +13,7 @@ describe("Bitsave test", ()=>{
     let accounts;
     let deployer;
 
-    beforeEach(async ()=>{
+    beforeEach(async () => {
         accounts = await ethers.getSigners();
         [deployer] = accounts;
 
@@ -35,15 +33,15 @@ describe("Bitsave test", ()=>{
             zetaNetwork: "mainnet",
         })
         const wGasToken = getAddressLib({
-          address: "weth9",
-          networkName: "eth-mainnet",
-          zetaNetwork: "mainnet",
+            address: "weth9",
+            networkName: "eth-mainnet",
+            zetaNetwork: "mainnet",
         });
 
         const evmSetupResult = await evmSetup(
-          wGasToken,
-          uniswapFactoryAddr,
-          uniswapRouterAddr
+            wGasToken,
+            uniswapFactoryAddr,
+            uniswapRouterAddr
         );
         ZRC20Contracts = evmSetupResult.ZRC20Contracts;
         systemContract = evmSetupResult.systemContract;

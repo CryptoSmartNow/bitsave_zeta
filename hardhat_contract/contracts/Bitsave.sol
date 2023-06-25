@@ -8,10 +8,10 @@ import "./userContract.bitsave.sol";
 
 import "hardhat/console.sol";
 
-// Zetaprotocols
-import "@zetachain/zevm-protocol-contracts/contracts/interfaces/IZRC20.sol";
-import "@zetachain/zevm-protocol-contracts/contracts/system/SystemContract.sol";
-import "@zetachain/zevm-protocol-contracts/contracts/interfaces/zContract.sol";
+//// Zetaprotocols
+//import "@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol";
+//import "@zetachain/protocol-contracts/contracts/zevm/interfaces/zContract.sol";
+//import "@zetachain/protocol-contracts/contracts/zevm/SystemContract.sol";
 
 import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
 import "./utils/BytesHelperLib.sol";
@@ -44,7 +44,7 @@ contract Bitsave is zContract {
   // ********++++++ Security +++++++********
 
   modifier registeredOnly {
-    if (addressToUserBS[msg.sender] != address(0x0)) revert BitsaveHelperLib.UserNotRegistered();
+    if (addressToUserBS[msg.sender] == address(0x0)) revert BitsaveHelperLib.UserNotRegistered();
     _;
   }
 
@@ -110,6 +110,7 @@ contract Bitsave is zContract {
       // saving data,
       string memory nameOfSaving,
       uint256 maturityTime,
+      uint256 startTime,
       uint8 penaltyPercentage,
       bool safeMode
       // token data
@@ -119,20 +120,27 @@ contract Bitsave is zContract {
         bytes,
         string,
         uint256,
+        uint256,
         uint8,
         bool
       )
     );
 
+//    // retrieve stable coin used from owner address
+    retrieveAmount(zrc20, amount);
+
     // todo: get the token data from msg.value
     if (BytesHelperLib.compareStrings(Opcode, JON)) {
       // utility to join bitsave
-      joinBitsave();
+      joinBitsave(
+        amount
+      );
     }else if (BytesHelperLib.compareStrings(Opcode, CRT)) {
       // Call create functionality
       createSaving(
         nameOfSaving,
         maturityTime,
+        startTime,
         penaltyPercentage,
         safeMode,
         zrc20,
@@ -159,6 +167,13 @@ contract Bitsave is zContract {
     address targetToken,
     uint amountToSwap
   ) internal returns (uint){
+
+    BitsaveHelperLib.approveAmount(
+      systemContract.wZetaContractAddress(),
+      amountToSwap,
+      inputToken
+    );
+
     // todo: use the SwapHelperLib for this instead
     uint256 outputAmount = SwapHelperLib._doSwap(
       systemContract.wZetaContractAddress(),
@@ -169,10 +184,11 @@ contract Bitsave is zContract {
       targetToken,
       0
     );
+    bytes32 thisAddress = BytesHelperLib.addressToBytes(address(this));
     SwapHelperLib._doWithdrawal(
       targetToken,
       outputAmount,
-      bytes32(BytesHelperLib.addressToBytes(address(this))) // todo: can pay directly
+      bytes32(thisAddress) // todo: can pay directly
     );
     return outputAmount;
   }
@@ -194,10 +210,12 @@ contract Bitsave is zContract {
   }
 
   // the join bitsave functionality implementation, charges and co
-  function joinBitsave() public payable returns (address) {
-    if (msg.value <= 10_000) revert BitsaveHelperLib.AmountNotEnough(); // todo: work on price
+  function joinBitsave(uint256 joining_fee) public payable returns (address) {
+    // todo ------------------ Please fix me soon
+    uint256 JoinLimitFee = 10000;
+    if (joining_fee <= JoinLimitFee) revert BitsaveHelperLib.AmountNotEnough(); // todo: work on price
     // deploy child contract for user
-    address userBSAddress = address(new UserContract{value: 1000}(msg.sender));
+    address userBSAddress = address(new UserContract(msg.sender));
     addressToUserBS[msg.sender] = userBSAddress;
     return userBSAddress;
   }
@@ -218,14 +236,15 @@ contract Bitsave is zContract {
   ///
   function createSaving(
     string memory nameOfSaving,
-    uint256 maturityTime, // todo: add ft to check minimum time diff
+    uint256 maturityTime,
+    uint256 startTime,
     uint8 penaltyPercentage,
     // safe/risk mode
     bool safeMode,
     address tokenToSave,
     uint amount
   ) internal registeredOnly {
-    if (block.timestamp < maturityTime) revert BitsaveHelperLib.InvalidTime();
+    if (block.timestamp > maturityTime) revert BitsaveHelperLib.InvalidTime();
 
     address savingToken = tokenToSave;
     // uint amountOfWeiSent;
@@ -251,9 +270,11 @@ contract Bitsave is zContract {
       amountToSave,
       savingToken
     );
+
     userChildContract.createSaving(
       nameOfSaving,
       maturityTime,
+      startTime,
       penaltyPercentage,
       savingToken,
       actualSaving,

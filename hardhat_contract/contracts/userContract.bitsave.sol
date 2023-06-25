@@ -6,9 +6,10 @@ import "hardhat/console.sol";
 import "./Bitsave.sol";
 
 // Zetaprotocols
-import "@zetachain/zevm-protocol-contracts/contracts/interfaces/IZRC20.sol";
-import "@zetachain/zevm-protocol-contracts/contracts/system/SystemContract.sol";
-import "@zetachain/zevm-protocol-contracts/contracts/interfaces/zContract.sol";
+// Zetaprotocols
+import "@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol";
+import "@zetachain/protocol-contracts/contracts/zevm/interfaces/zContract.sol";
+import "@zetachain/protocol-contracts/contracts/zevm/SystemContract.sol";
 
 import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
 import "./utils/BitsaveHelperLib.sol";
@@ -88,16 +89,17 @@ contract UserContract {
     function createSaving (
         string memory name,
         uint256 maturityTime,
+        uint256 startTime,
         uint8 penaltyPercentage,
         address tokenId,
         uint256 amountToRetrieve,
         bool isSafeMode
     ) public payable bitsaveOnly returns (uint) {
-        uint startTime = block.timestamp;
         // ensure saving does not exist; ! todo: this wont work
-        if (!savings[name].isValid) revert BitsaveHelperLib.InvalidSaving();
+        if (savings[name].isValid) revert BitsaveHelperLib.InvalidSaving();
         // check if end time valid
-        if (maturityTime > startTime) revert BitsaveHelperLib.InvalidTime();
+        if (maturityTime < startTime) revert BitsaveHelperLib.InvalidTime();
+        if (maturityTime < block.timestamp) revert BitsaveHelperLib.InvalidTime();
 
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae
