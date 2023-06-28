@@ -32,9 +32,9 @@ describe('WITHDRAW SAVING', function () {
         console.log("post", postBalance)
 
         expect(
-            parseInt(initialUserBalance)
+            initialUserBalance
         ).to.be.lt(
-            parseInt(postBalance)
+            postBalance
         )
     });
 

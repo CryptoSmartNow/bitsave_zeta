@@ -47,13 +47,13 @@ contract UserContract {
     }
     // ******+++++++++ Security functionalities ++++++++++++
 
-    constructor(address ownerAddress, address stableCoin) payable {
+    constructor(address _ownerAddress, address _stableCoin) payable {
         // save bitsaveAddress first // todo: retrieve correct address
-        bitsaveAddress = payable(msg.sender);
+        bitsaveAddress = msg.sender;
         // store owner's address
-        ownerAddress = payable(ownerAddress);
+        ownerAddress = payable(_ownerAddress);
         // store stable coin
-        stableCoin = payable(stableCoin)
+        stableCoin = payable(_stableCoin);
     }
 
     function retrieveToken(
@@ -108,6 +108,9 @@ contract UserContract {
         uint accumulatedInterest = 3; // todo: create interest formulae
 
         if (isSafeMode) {
+            console.log("create savings");
+            console.log(stableCoin);
+            console.log(ownerAddress);
             handleTokenRetrieving(
                 stableCoin,
                 amountToRetrieve
@@ -153,12 +156,12 @@ contract UserContract {
         if (toFundSavings.isSafeMode) {
             handleTokenRetrieving(
                 stableCoin,
-                amountToRetrieve
+                savingPlusAmount
             );
         }else {
             handleTokenRetrieving(
-                tokenId,
-                amountToRetrieve
+                toFundSavings.tokenId,
+                savingPlusAmount
             );
         }
 

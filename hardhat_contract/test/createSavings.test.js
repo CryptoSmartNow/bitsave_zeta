@@ -22,8 +22,6 @@ const createSaving = async (bitsave, registeredUser, reg_userChildAddress) => {
         .connect(registeredUser)
         .approve(bitsave.address, approvalAmount)
 
-        console.log(reg_userChildAddress)
-
     // const {
     //     userChildContract
     // } = await childContractGenerate(reg_userChildAddress)
@@ -84,7 +82,6 @@ describe('CREATE SAVING', () => {
         expect(
             savingCreated.maturityTime.toNumber()
         ).to.equal(endTime)
-        console.log("t1")
         // uses wrong time input for lev.
         expect(
             savingCreated.startTime

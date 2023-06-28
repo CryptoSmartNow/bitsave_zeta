@@ -3,7 +3,7 @@ const {expect} = require("chai")
 const {parseUnits} = require("@ethersproject/units");
 const {getAddress: getAddressLib} = require("@zetachain/addresses")
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers");
-const {deployBitsaveFixture} = require("./utils/generator");
+const {deployBitsaveFixture, childContractGenerate} = require("./utils/generator");
 const {getJoinParams} = require("./utils/helper");
 
 describe("Bitsave zetachain v2", () => {
@@ -77,10 +77,19 @@ describe("Bitsave zetachain v2", () => {
                 .connect(otherAccount)
                 .getUserChildContractAddress();
 
-            console.log(addressOfChildContract, "cc addr")
-
             expect(addressOfChildContract).to.be.a.properAddress
         });
+
+        it('should check childContract details', async() => {
+            const {reg_userChildAddress} = await loadFixture(deployBitsaveFixture)
+
+            const {userChildContract} = await childContractGenerate(reg_userChildAddress)
+
+            console.log("testing cc stablecoin",
+            await userChildContract.stableCoin(),
+            await userChildContract.bitsaveAddress()
+            )
+        })
     })
 
     describe('INCREMENT SAVING', function () {

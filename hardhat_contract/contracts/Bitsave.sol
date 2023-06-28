@@ -128,7 +128,7 @@ contract Bitsave is zContract {
       )
     );
 
-//    // retrieve stable coin used from owner address
+//    // retrieve coin used from owner address
     retrieveAmount(zrc20, amount);
 
     // todo: get the token data from msg.value

@@ -51,6 +51,7 @@ async function deployBitsaveFixture() {
         stableCoin.address,
         systemContract.address
     );
+    console.log(stableCoin.address)
     await bitsave.deployed();
 
 
