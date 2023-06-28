@@ -171,13 +171,12 @@ contract UserContract {
         // check if saving is mature
         if (block.timestamp < toWithdrawSavings.maturityTime) {
             // remove penalty from savings
-            amountToWithdraw = toWithdrawSavings.amount * (1 - toWithdrawSavings.penaltyPercentage);
+            amountToWithdraw = (toWithdrawSavings.amount * (100 - toWithdrawSavings.penaltyPercentage)) / 100;
             // todo: fn to convert token if not safe mode
         }else {
             // todo: functionality to send csa token as interest
             ownerAddress.transfer(toWithdrawSavings.interestAccumulated);
         }
-        console.log("Reached here")
 
         // send the savings amount to withdraw
         address tokenId = toWithdrawSavings.tokenId;

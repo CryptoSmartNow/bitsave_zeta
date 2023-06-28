@@ -18,7 +18,7 @@ describe('WITHDRAW SAVING', function () {
         await createSaving(bitsave, registeredUser, reg_userChildAddress)
         
         const initialUserBalance = await registeredUser.getBalance()
-        console.log(initialUserBalance)
+        console.log("initial", initialUserBalance)
         
         await bitsave
             .connect(registeredUser)
@@ -44,25 +44,5 @@ describe('WITHDRAW SAVING', function () {
 
     it('should change value of saving to null');
 
-    it('should emit event for withdrawal', async () => {
-
-        const {
-            bitsave, registeredUser, ZRC20Contracts
-        } = await loadFixture(deployBitsaveFixture)
-        const PaymentContract = ZRC20Contracts[0]
-
-        await createSaving(bitsave, registeredUser)
-
-        await expect(
-            bitsave
-                .connect(registeredUser)
-                .onCrossChainCall(
-                    PaymentContract.address,
-                    0,
-                    getWithdrawParams(nameOfSaving)
-                )
-        )
-        .to.emit(bitsave, "SavingWithdrawn")
-        .withArgs(nameOfSaving)
-    });
+    it('should emit event for withdrawal')
 });

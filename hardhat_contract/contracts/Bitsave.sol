@@ -201,7 +201,7 @@ contract Bitsave is zContract {
     address ownerAddress
   ) public payable {
     // check amount sent
-    if(amount > poolFee) revert BitsaveHelperLib.AmountNotEnough();
+    if(amount < poolFee) revert BitsaveHelperLib.AmountNotEnough();
     // retrieve stable coin used from owner address
     retrieveAmount(stableCoin, amount);
     // convert to original token using crossChainSwap()
