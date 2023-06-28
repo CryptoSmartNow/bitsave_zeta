@@ -7,11 +7,11 @@ import "./Bitsave.sol";
 
 // Zetaprotocols
 // Zetaprotocols
-import "@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol";
+// import "@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol";
 import "@zetachain/protocol-contracts/contracts/zevm/interfaces/zContract.sol";
 import "@zetachain/protocol-contracts/contracts/zevm/SystemContract.sol";
 
-import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
+// import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
 import "./utils/BitsaveHelperLib.sol";
 
 contract UserContract {

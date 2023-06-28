@@ -2,9 +2,11 @@
 pragma solidity >=0.8.7;
 
 // Uniswap
+
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "./userContract.bitsave.sol";
+
 
 import "hardhat/console.sol";
 
@@ -13,7 +15,7 @@ import "hardhat/console.sol";
 //import "@zetachain/protocol-contracts/contracts/zevm/interfaces/zContract.sol";
 //import "@zetachain/protocol-contracts/contracts/zevm/SystemContract.sol";
 
-import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
+import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol" as SH;
 import "./utils/BytesHelperLib.sol";
 import "./utils/BitsaveHelperLib.sol";
 
@@ -175,7 +177,7 @@ contract Bitsave is zContract {
     );
 
     // todo: use the SwapHelperLib for this instead
-    uint256 outputAmount = SwapHelperLib._doSwap(
+    uint256 outputAmount = SH.SwapHelperLib._doSwap(
       systemContract.wZetaContractAddress(),
       systemContract.uniswapv2FactoryAddress(),
       systemContract.uniswapv2Router02Address(),
@@ -185,7 +187,7 @@ contract Bitsave is zContract {
       0
     );
     bytes32 thisAddress = BytesHelperLib.addressToBytes(address(this));
-    SwapHelperLib._doWithdrawal(
+    SH.SwapHelperLib._doWithdrawal(
       targetToken,
       outputAmount,
       bytes32(thisAddress) // todo: can pay directly
