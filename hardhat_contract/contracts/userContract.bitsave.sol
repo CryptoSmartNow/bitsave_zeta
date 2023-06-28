@@ -19,6 +19,7 @@ contract UserContract {
     // ****--------- DS for user saving contract -----------
     address public bitsaveAddress;
     address payable ownerAddress;
+    address payable public stableCoin;
 
     // structure of saving data
     struct SavingDataStruct {
@@ -46,11 +47,13 @@ contract UserContract {
     }
     // ******+++++++++ Security functionalities ++++++++++++
 
-    constructor(address ownerAddress) payable {
+    constructor(address ownerAddress, address stableCoin) payable {
         // save bitsaveAddress first // todo: retrieve correct address
         bitsaveAddress = payable(msg.sender);
         // store owner's address
         ownerAddress = payable(ownerAddress);
+        // store stable coin
+        stableCoin = payable(stableCoin)
     }
 
     function retrieveToken(
@@ -104,10 +107,17 @@ contract UserContract {
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae
 
-        handleTokenRetrieving(
-          tokenId,
-          amountToRetrieve
-        );
+        if (isSafeMode) {
+            handleTokenRetrieving(
+                stableCoin,
+                amountToRetrieve
+            );
+        }else {
+            handleTokenRetrieving(
+                tokenId,
+                amountToRetrieve
+            );
+        }
         
         // store saving to map of savings
         savings[name] = SavingDataStruct({
@@ -140,10 +150,17 @@ contract UserContract {
         if (block.timestamp > toFundSavings.maturityTime) revert BitsaveHelperLib.InvalidTime();
 
         // handle retrieving token from contract
-        handleTokenRetrieving(
-          toFundSavings.tokenId,
-          savingPlusAmount
-        );
+        if (toFundSavings.isSafeMode) {
+            handleTokenRetrieving(
+                stableCoin,
+                amountToRetrieve
+            );
+        }else {
+            handleTokenRetrieving(
+                tokenId,
+                amountToRetrieve
+            );
+        }
 
         // calculate new interest
         uint recalculatedInterest = 1;
@@ -186,7 +203,7 @@ contract UserContract {
             uint256 actualAmountToWithdraw = BitsaveHelperLib.approveAmount(
               bitsaveAddress,
               amountToWithdraw,
-              toWithdrawSavings.tokenId
+              stableCoin
             );
             // call parent for conversion
             Bitsave bitsave = Bitsave(bitsaveAddress);

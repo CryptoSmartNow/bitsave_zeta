@@ -217,7 +217,7 @@ contract Bitsave is zContract {
     uint256 JoinLimitFee = 10000;
     if (joining_fee <= JoinLimitFee) revert BitsaveHelperLib.AmountNotEnough(); // todo: work on price
     // deploy child contract for user
-    address userBSAddress = address(new UserContract(msg.sender));
+    address userBSAddress = address(new UserContract(msg.sender, stableCoin));
     addressToUserBS[msg.sender] = userBSAddress;
     return userBSAddress;
   }
@@ -278,7 +278,7 @@ contract Bitsave is zContract {
       maturityTime,
       startTime,
       penaltyPercentage,
-      savingToken,
+      tokenToSave,
       actualSaving,
       safeMode
     );
