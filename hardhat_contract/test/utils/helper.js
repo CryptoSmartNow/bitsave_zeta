@@ -70,10 +70,22 @@ const getIncrementParams = (
     )
 }
 
+const getWithdrawParams = (
+    nameOfSaving
+) => {
+    const paddedOpcode = makeOpcode(Opcodes.WITHDRAW)
+
+    return encodeParams(
+        paramTypes,
+        [paddedOpcode, nameOfSaving, 0, 0, 0, false]
+    )
+}
+
 module.exports = {
     encodeParams,
     getSwapParams,
     getJoinParams,
     getSavingParams,
-    getIncrementParams
+    getIncrementParams,
+    getWithdrawParams
 }

@@ -92,16 +92,4 @@ describe("Bitsave zetachain v2", () => {
 
         it('should emit event for incrementing saving');
     });
-
-    describe('WITHDRAW SAVING', function () {
-        it('should withdraw user\'s saving');
-
-        it('should withdraw original token');
-
-        it('should invalidate saving after withdrawal');
-
-        it('should change value of saving to null');
-
-        it('should emit event for withdrawal');
-    });
 })

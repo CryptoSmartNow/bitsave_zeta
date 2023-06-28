@@ -111,3 +111,9 @@ describe('CREATE SAVING', () => {
 
     it('should emit event for creating saving');
 })
+
+
+module.exports = {
+    nameOfSaving,
+    createSaving
+}
