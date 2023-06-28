@@ -108,7 +108,8 @@ const childContractGenerate = async (childAddress) => {
         .getContractFactory("UserContract")
 
     return {
-        userChildContract: BitsaveChild.attach(childAddress)
+        userChildContract: BitsaveChild.attach(childAddress),
+        CC: BitsaveChild
     }
 }
 

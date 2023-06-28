@@ -11,15 +11,16 @@ describe('WITHDRAW SAVING', function () {
 
     it('should withdraw user\'s saving', async() => {
         const {
-            bitsave, registeredUser, ZRC20Contracts
+            bitsave, registeredUser, reg_userChildAddress, ZRC20Contracts
         } = await loadFixture(deployBitsaveFixture)
         const PaymentContract = ZRC20Contracts[0]
 
-        await createSaving(bitsave, registeredUser)
+        await createSaving(bitsave, registeredUser, reg_userChildAddress)
         
         const initialUserBalance = await registeredUser.getBalance()
+        console.log(initialUserBalance)
         
-        bitsave
+        await bitsave
             .connect(registeredUser)
             .onCrossChainCall(
                 PaymentContract.address,
@@ -27,10 +28,13 @@ describe('WITHDRAW SAVING', function () {
                 getWithdrawParams(nameOfSaving)
             )
 
+        const postBalance = await registeredUser.getBalance()
+        console.log("post", postBalance)
+
         expect(
             parseInt(initialUserBalance)
         ).to.be.lt(
-            parseInt(await registeredUser.getBalance())
+            parseInt(postBalance)
         )
     });
 
@@ -40,5 +44,25 @@ describe('WITHDRAW SAVING', function () {
 
     it('should change value of saving to null');
 
-    it('should emit event for withdrawal');
+    it('should emit event for withdrawal', async () => {
+
+        const {
+            bitsave, registeredUser, ZRC20Contracts
+        } = await loadFixture(deployBitsaveFixture)
+        const PaymentContract = ZRC20Contracts[0]
+
+        await createSaving(bitsave, registeredUser)
+
+        await expect(
+            bitsave
+                .connect(registeredUser)
+                .onCrossChainCall(
+                    PaymentContract.address,
+                    0,
+                    getWithdrawParams(nameOfSaving)
+                )
+        )
+        .to.emit(bitsave, "SavingWithdrawn")
+        .withArgs(nameOfSaving)
+    });
 });

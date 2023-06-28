@@ -14,13 +14,19 @@ const endTime = parseInt(((Date.now() + 3000000) / 1000).toString());
 const startTime = parseInt((Date.now() / 1000).toString())
 
 
-const createSaving = async (bitsave, registeredUser, data) => {
+const createSaving = async (bitsave, registeredUser, reg_userChildAddress) => {
     const {ZRC20Contracts} = await loadFixture(deployBitsaveFixture)
     const PaymentContract = ZRC20Contracts[0];
 
     await PaymentContract
         .connect(registeredUser)
         .approve(bitsave.address, approvalAmount)
+
+        console.log(reg_userChildAddress)
+
+    // const {
+    //     userChildContract
+    // } = await childContractGenerate(reg_userChildAddress)
 
     await bitsave
         .connect(registeredUser)
@@ -35,6 +41,27 @@ const createSaving = async (bitsave, registeredUser, data) => {
                 true
             )
         )
+
+    // await expect(
+    //     bitsave
+    //     .connect(registeredUser)
+    //     .onCrossChainCall(
+    //         PaymentContract.address,
+    //         amountToSave,
+    //         getSavingParams(
+    //             nameOfSaving,
+    //             endTime,
+    //             startTime,
+    //             twoPenaltyPercentage,
+    //             true
+    //         )
+    //     )
+    // ).to.emit(userChildContract, "SavingCreated")
+    // .withArgs(
+    //     nameOfSaving,
+    //     amount,
+    //     PaymentContract.address
+    // )
 }
 
 describe('CREATE SAVING', () => {
@@ -46,7 +73,7 @@ describe('CREATE SAVING', () => {
             bitsave, registeredUser, reg_userChildAddress
         } = await loadFixture(deployBitsaveFixture)
 
-        await createSaving(bitsave, registeredUser)
+        await createSaving(bitsave, registeredUser, reg_userChildAddress)
 
         const {userChildContract} = await childContractGenerate(reg_userChildAddress)
         const savingCreated = await userChildContract
@@ -70,7 +97,7 @@ describe('CREATE SAVING', () => {
 
         const userInitialBalance = await registeredUser.getBalance()
 
-        await createSaving(bitsave, registeredUser)
+        await createSaving(bitsave, registeredUser, reg_userChildAddress)
 
         expect(
             parseInt(userInitialBalance.toString())

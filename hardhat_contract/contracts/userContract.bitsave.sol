@@ -136,7 +136,7 @@ contract UserContract {
       uint256 savingPlusAmount
     ) public payable bitsaveOnly returns (uint) {
         SavingDataStruct storage toFundSavings = savings[name];
-        if (toFundSavings.isValid) revert BitsaveHelperLib.InvalidSaving();
+        if (!toFundSavings.isValid) revert BitsaveHelperLib.InvalidSaving();
         if (block.timestamp > toFundSavings.maturityTime) revert BitsaveHelperLib.InvalidTime();
 
         // handle retrieving token from contract
@@ -166,7 +166,7 @@ contract UserContract {
     function withdrawSaving (string memory name) public payable bitsaveOnly returns (string memory) {
         SavingDataStruct storage toWithdrawSavings = savings[name];
         // check if saving exit
-        if (toWithdrawSavings.isValid) revert BitsaveHelperLib.InvalidSaving();
+        if (!toWithdrawSavings.isValid) revert BitsaveHelperLib.InvalidSaving();
         uint amountToWithdraw;
         // check if saving is mature
         if (block.timestamp < toWithdrawSavings.maturityTime) {
@@ -177,6 +177,7 @@ contract UserContract {
             // todo: functionality to send csa token as interest
             ownerAddress.transfer(toWithdrawSavings.interestAccumulated);
         }
+        console.log("Reached here")
 
         // send the savings amount to withdraw
         address tokenId = toWithdrawSavings.tokenId;
