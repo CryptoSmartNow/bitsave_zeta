@@ -68,14 +68,14 @@ describe('CREATE SAVING', () => {
         const {bitsave, registeredUser, reg_userChildAddress}
             = await loadFixture(deployBitsaveFixture)
 
-        const userInitialBalance = registeredUser.getBalance()
+        const userInitialBalance = await registeredUser.getBalance()
 
         await createSaving(bitsave, registeredUser)
 
         expect(
             parseInt(userInitialBalance.toString())
         ).to.be.gte(
-            parseInt(registeredUser.getBalance())
+            parseInt(await registeredUser.getBalance())
         )
     });
 
