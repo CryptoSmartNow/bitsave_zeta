@@ -4,7 +4,7 @@ const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
 const {utils} = require("ethers")
 const {deployBitsaveFixture, childContractGenerate} = require("./utils/generator")
 const {getWithdrawParams} = require("./utils/helper");
-const {createSaving, nameOfSaving} = require("./createSavings.test")
+const {createSaving, nameOfSaving, amountToSave} = require("./createSavings.test")
 
 
 describe('WITHDRAW SAVING', function () {
@@ -14,11 +14,12 @@ describe('WITHDRAW SAVING', function () {
             bitsave, registeredUser, reg_userChildAddress, ZRC20Contracts
         } = await loadFixture(deployBitsaveFixture)
         const PaymentContract = ZRC20Contracts[0]
+        const userAddress = registeredUser.address
 
         await createSaving(bitsave, registeredUser, reg_userChildAddress)
         
-        const initialUserBalance = await registeredUser.getBalance()
-        console.log("initial", initialUserBalance)
+        const initialUserBalance = await PaymentContract.balanceOf(userAddress)
+        console.log("initial", initialUserBalance, amountToSave)
         
         await bitsave
             .connect(registeredUser)
@@ -28,7 +29,7 @@ describe('WITHDRAW SAVING', function () {
                 getWithdrawParams(nameOfSaving)
             )
 
-        const postBalance = await registeredUser.getBalance()
+        const postBalance = await PaymentContract.balanceOf(userAddress)
         console.log("post", postBalance)
 
         expect(

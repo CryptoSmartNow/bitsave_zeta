@@ -139,5 +139,6 @@ describe('CREATE SAVING', () => {
 
 module.exports = {
     nameOfSaving,
-    createSaving
+    createSaving,
+    amountToSave
 }
