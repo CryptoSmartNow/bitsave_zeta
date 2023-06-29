@@ -212,7 +212,7 @@ contract UserContract {
             Bitsave bitsave = Bitsave(bitsaveAddress);
             bitsave
                 .sendAsOriginalToken(
-                    toWithdrawSavings.tokenId,
+                    tokenId,
                     actualAmountToWithdraw,
                     ownerAddress
                 );

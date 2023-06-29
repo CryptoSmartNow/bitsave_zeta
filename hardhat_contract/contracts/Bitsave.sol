@@ -205,10 +205,10 @@ contract Bitsave is zContract {
     // retrieve stable coin used from owner address
     retrieveAmount(stableCoin, amount);
     // convert to original token using crossChainSwap()
-    crossChainSwap(stableCoin, originalToken, amount);
+    uint256 outputAmount = crossChainSwap(stableCoin, originalToken, amount);
     // send to owner address directly
     // IERC20(originalToken).transfer(ownerAddress, amount);
-    IZRC20(originalToken).transfer(ownerAddress, amount);
+    IZRC20(originalToken).transfer(ownerAddress, outputAmount);
   }
 
   // the join bitsave functionality implementation, charges and co
