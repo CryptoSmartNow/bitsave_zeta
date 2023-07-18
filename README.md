@@ -9,9 +9,9 @@ npx hardhat run scripts/deploy.js
 ```
 
 ## Constants
-bitsaveAddress => 0x0EB53f97B36f7060659A277AA415b176079a1C41
-paymentTokenAddress => 0x91d18e54DAf4F677cB28167158d6dd21F6aB3921
-parsedJoiningFee => parseUnits("100")
+- bitsaveAddress => `0x0EB53f97B36f7060659A277AA415b176079a1C41`
+- paymentTokenAddress => `0x91d18e54DAf4F677cB28167158d6dd21F6aB3921`
+- parsedJoiningFee => `parseUnits("100")`
 
 # Project interface
 
@@ -29,9 +29,9 @@ You also create the Payment Token Contract object, can name as `PaymentToken`.
 You also create the User Child Contract object, can name as `UserChildContract`.
 
 All ABIs have been provided already, sources include
-1. BitsaveABI => "hardhat_contract/artifacts/contracts/Bitsave.sol/Bitsave.json"
-2. UserChildContractABI => "hardhat_contract/artifacts/contracts/userContract.bitsave.sol/UserContract.json"
-3. PaymentContract => "hardhat_contract/artifacts/@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol/IZRC20.json"
+1. BitsaveABI => `hardhat_contract/artifacts/contracts/Bitsave.sol/Bitsave.json`
+2. UserChildContractABI => `hardhat_contract/artifacts/contracts/userContract.bitsave.sol/UserContract.json`
+3. PaymentContract => `hardhat_contract/artifacts/@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol/IZRC20.json`
 
 
 Each integration proceeds as follows:
