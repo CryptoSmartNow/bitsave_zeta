@@ -86,6 +86,9 @@ describe('CREATE SAVING', () => {
         expect(
             savingCreated.startTime
         ).to.be.equal(startTime)
+
+        const savings = await userChildContract.savings();
+        console.log(savings)
     });
 
     it('should reduce balance of user', async function () {
