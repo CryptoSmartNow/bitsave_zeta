@@ -1,12 +1,4 @@
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
+### Documentation
 
 ## Constants
 - bitsaveAddress => `0x0EB53f97B36f7060659A277AA415b176079a1C41`
@@ -98,3 +90,13 @@ Each integration proceeds as follows:
 - ### Get all user's savings
     `UserChildContract.savings()`
 
+
+# Project Development:
+
+```shell
+npx hardhat help
+npx hardhat test
+REPORT_GAS=true npx hardhat test
+npx hardhat node
+npx hardhat run scripts/deploy.js
+```
