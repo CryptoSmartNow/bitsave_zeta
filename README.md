@@ -36,7 +36,7 @@ All ABIs have been provided already, sources include
 
 Each integration proceeds as follows:
 
-- Join Bitsave
+- ### Join Bitsave
 1. Approve joining fee:
     ```js
     PaymentToken.approve(bitsaveAddress, parsedJoiningFee)
@@ -52,7 +52,8 @@ Each integration proceeds as follows:
     `userChildContractAddress = Bitsave.getUserChildContractAddress()`
 5. From this child address, the userChildContract can be created using same approach for the Bitsave Object
 
-- Create Savings
+
+- ### Create Savings
 1. Approve saving amount
     *Implementation in 'Join Bitsave'*
 2. Call onCrossChain on Bitsave
@@ -70,7 +71,8 @@ Each integration proceeds as follows:
 4. You can always retrieve a particular savings data from
     `UserChildContract.getSavings(nameOfSaving)`
 
-- Increment Savings
+
+- ### Increment Savings
 1. Approve saving amount
     *Implementation in 'Join Bitsave'*
 2. Call onCrossChain on Bitsave
@@ -82,7 +84,8 @@ Each integration proceeds as follows:
     - arguments are:
         1. nameOfSaving,
 
-- Withdraw Savings
+
+- ### Withdraw Savings
 1. Call onCrossChainCall on Bitsave
 2. Pass the following arguments
     - paymentTokenAddress
@@ -92,6 +95,6 @@ Each integration proceeds as follows:
         1. nameOfSaving
 
 
-- Get all user's savings
+- ### Get all user's savings
     `UserChildContract.savings()`
 
