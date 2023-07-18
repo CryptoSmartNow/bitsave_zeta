@@ -12,10 +12,10 @@ After gaining the Contract object using whatever tool e.g. ethersjs,
 You can name the Contract object as `Bitsave`, format example with ethersjs.
 ```js
 new ethers.Contract(
-        bitsaveAddress,
-        BitsaveABI,
-        signer // from the user's wallet
-    )
+    bitsaveAddress,
+    BitsaveABI,
+    signer // from the user's wallet
+)
 ```
 You also create the Payment Token Contract object, can name as `PaymentToken`.
 You also create the User Child Contract object, can name as `UserChildContract`.
