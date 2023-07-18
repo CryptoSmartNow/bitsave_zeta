@@ -35,6 +35,18 @@ contract UserContract {
 
     // mapping of name of saving to individual saving
     mapping (string => SavingDataStruct) public savings;
+    struct SavingsNamesObj {
+        string[] savingsNames;   
+    }
+
+    SavingsNamesObj private savingsNamesVar;
+    function addSavingName(string memory _name) private {
+        savingsNamesVar.savingsNames.push(_name);
+    }
+
+    function getSavingsNames() external view returns(SavingsNamesObj memory) {
+        return savingsNamesVar;
+    }
 
     // *****+++++++ DS for user saving contract ++++++++++++
 
@@ -133,6 +145,8 @@ contract UserContract {
             isSafeMode : isSafeMode,
             isValid : true
         });
+
+        addSavingName(name);
 
         emit BitsaveHelperLib.SavingCreated(
             name,

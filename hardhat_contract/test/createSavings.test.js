@@ -87,8 +87,10 @@ describe('CREATE SAVING', () => {
             savingCreated.startTime
         ).to.be.equal(startTime)
 
-        const savings = await userChildContract.savings();
-        console.log(savings)
+        console.log("Got here")
+
+        const savings = await userChildContract.getSavingsNames();
+        console.log("All user's savings", savings)
     });
 
     it('should reduce balance of user', async function () {
