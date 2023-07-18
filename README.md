@@ -17,7 +17,7 @@ parsedJoiningFee => parseUnits("100")
 
 All interaction with the contract passes through the `onCrossChainCall` method.
 After gaining the Contract object using whatever tool e.g. ethersjs,
-You can name the Contract object as `Bitsave`, format example with ethersjs
+You can name the Contract object as `Bitsave`, format example with ethersjs.
 ```js
 new ethers.Contract(
         bitsaveAddress,
