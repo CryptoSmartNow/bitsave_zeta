@@ -34,7 +34,7 @@ contract UserContract {
     }
 
     // mapping of name of saving to individual saving
-    mapping (string => SavingDataStruct) savings;
+    mapping (string => SavingDataStruct) public savings;
 
     // *****+++++++ DS for user saving contract ++++++++++++
 
