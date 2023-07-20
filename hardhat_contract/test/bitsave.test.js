@@ -77,6 +77,8 @@ describe("Bitsave zetachain v2", () => {
                 .connect(otherAccount)
                 .getUserChildContractAddress();
 
+            console.log("User child address", addressOfChildContract)
+
             expect(addressOfChildContract).to.be.a.properAddress
         });
 

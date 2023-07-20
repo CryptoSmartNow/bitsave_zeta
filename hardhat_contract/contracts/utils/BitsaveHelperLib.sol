@@ -33,6 +33,7 @@ library BitsaveHelperLib {
         bytes to,
         uint amount
     );
+    event Received(address, uint);
 
     function approveAmount(
         address toApproveUserAddress,

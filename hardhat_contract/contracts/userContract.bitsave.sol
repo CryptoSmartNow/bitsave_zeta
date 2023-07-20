@@ -17,7 +17,7 @@ import "./utils/BitsaveHelperLib.sol";
 contract UserContract {
 
     // ****--------- DS for user saving contract -----------
-    address public bitsaveAddress;
+    address payable public bitsaveAddress;
     address payable ownerAddress;
     address payable public stableCoin;
 
@@ -61,7 +61,7 @@ contract UserContract {
 
     constructor(address _ownerAddress, address _stableCoin) payable {
         // save bitsaveAddress first // todo: retrieve correct address
-        bitsaveAddress = msg.sender;
+        bitsaveAddress = payable(msg.sender);
         // store owner's address
         ownerAddress = payable(_ownerAddress);
         // store stable coin
@@ -254,6 +254,10 @@ contract UserContract {
 
     function getSavingTokenId(string memory nameOfSaving) view external returns (address) {
         return savings[nameOfSaving].tokenId;
+    }
+
+    receive() external payable {
+        emit BitsaveHelperLib.Received(msg.sender, msg.value);
     }
 
 }

@@ -222,8 +222,8 @@ contract Bitsave is zContract {
     return userBSAddress;
   }
 
-  function getUserChildContractAddress() public view returns (address) {
-    return addressToUserBS[msg.sender];
+  function getUserChildContractAddress() public view returns (address payable) {
+    return payable(addressToUserBS[msg.sender]);
   }
 
   ///
@@ -262,7 +262,7 @@ contract Bitsave is zContract {
       savingToken = stableCoin;
     }
     // Initialize user child contract
-    address userChildContractAddress = getUserChildContractAddress();
+    address payable userChildContractAddress = getUserChildContractAddress();
     userChildContract = UserContract(userChildContractAddress);
 
     /// call create savings for child contract
@@ -296,7 +296,7 @@ contract Bitsave is zContract {
     uint256 amount
   ) internal registeredOnly {
     // initialize userChildContract
-    address userChildContractAddress = addressToUserBS[msg.sender];
+    address payable userChildContractAddress = payable(addressToUserBS[msg.sender]);
     userChildContract = UserContract(userChildContractAddress);
     // todo: perform amount conversion and everything
     uint savingPlusAmount = amount;
@@ -329,10 +329,14 @@ contract Bitsave is zContract {
     string memory nameOfSavings
   ) public registeredOnly returns (bool) {
     // initialize user's child userChildContract
-    userChildContract = UserContract(addressToUserBS[msg.sender]);
+    userChildContract = UserContract(payable(addressToUserBS[msg.sender]));
     // call withdraw savings fn
     userChildContract.withdrawSaving(nameOfSavings);
     return true;
+  }
+
+  receive() external payable {
+    emit BitsaveHelperLib.Received(msg.sender, msg.value);
   }
 
 }
