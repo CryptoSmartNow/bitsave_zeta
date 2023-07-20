@@ -1,7 +1,7 @@
 ### Documentation
 
 ## Constants
-- bitsaveAddress => `0x364176De7e4cA1B917fd9668CD72B63bBAa56fF8`
+- bitsaveAddress => `0x8BFF655458442588C20dfB4636b9Fb9DE150EAbe`
 - paymentTokenAddress => `0x91d18e54DAf4F677cB28167158d6dd21F6aB3921`
 - parsedJoiningFee => `parseUnits("100")`
 
@@ -23,7 +23,7 @@ You also create the User Child Contract object, can name as `UserChildContract`.
 All ABIs have been provided already, sources include
 1. BitsaveABI => `hardhat_contract/artifacts/contracts/Bitsave.sol/Bitsave.json`
 2. UserChildContractABI => `hardhat_contract/artifacts/contracts/userContract.bitsave.sol/UserContract.json`
-3. PaymentContract => `hardhat_contract/artifacts/@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol/IZRC20.json`
+3. PaymentContractABI => `hardhat_contract/artifacts/@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol/IZRC20.json`
 
 
 Each integration proceeds as follows:
@@ -88,7 +88,7 @@ Each integration proceeds as follows:
 
 
 - ### Get all user's savings
-    `UserChildContract.savings()`
+    `UserChildContract.getSavingsNames()`
 
 
 # Project Development:

@@ -99,7 +99,7 @@ describe('CREATE SAVING', () => {
 
         const userInitialBalance = await registeredUser.getBalance()
 
-        await createSaving(bitsave, registeredUser, reg_userChildAddress)
+        await createSaving(bitsave, registereccdUser, reg_userChildAddress)
 
         expect(
             parseInt(userInitialBalance.toString())
