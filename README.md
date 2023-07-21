@@ -1,7 +1,7 @@
 ### Documentation
 
 ## Constants
-- bitsaveAddress => `0xF9E2C993fD91a3324454aD25572Cf5425Ef83fc9`
+- bitsaveAddress => `0x6e299956270c355aAe829c2aaB435b2e81E5B5f6`
 - paymentTokenAddress => `0x91d18e54DAf4F677cB28167158d6dd21F6aB3921`
 - parsedJoiningFee => `parseUnits("100")`
 
