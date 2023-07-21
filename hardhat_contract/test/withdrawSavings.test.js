@@ -46,8 +46,10 @@ describe('WITHDRAW SAVING', function () {
         const PaymentContract = ZRC20Contracts[0]
         const userAddress = registeredUser.address
 
+        const { userChildContract } = await childContractGenerate(reg_userChildAddress);
         await createSaving(bitsave, registeredUser, reg_userChildAddress);
         
+        const savingCreated = await userChildContract.getSavings(nameOfSaving);
     });
 
     it('should revert for invalid saving', async function() {
