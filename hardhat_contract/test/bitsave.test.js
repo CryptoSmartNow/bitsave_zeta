@@ -3,7 +3,7 @@ const {expect} = require("chai")
 const {parseUnits} = require("@ethersproject/units");
 const {getAddress: getAddressLib} = require("@zetachain/addresses")
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers");
-const {deployBitsaveFixture} = require("./utils/generator");
+const {deployBitsaveFixture, childContractGenerate} = require("./utils/generator");
 const {getJoinParams} = require("./utils/helper");
 
 describe("Bitsave zetachain v2", () => {
@@ -77,31 +77,20 @@ describe("Bitsave zetachain v2", () => {
                 .connect(otherAccount)
                 .getUserChildContractAddress();
 
-            console.log(addressOfChildContract, "cc addr")
+            console.log("User child address", addressOfChildContract)
 
             expect(addressOfChildContract).to.be.a.properAddress
         });
+
+        it('should check childContract details', async() => {
+            const {reg_userChildAddress} = await loadFixture(deployBitsaveFixture)
+
+            const {userChildContract} = await childContractGenerate(reg_userChildAddress)
+
+            console.log("testing cc stablecoin",
+            await userChildContract.stableCoin(),
+            await userChildContract.bitsaveAddress()
+            )
+        })
     })
-
-    describe('INCREMENT SAVING', function () {
-        it('should add to saving');
-
-        it('should ensure saving mode');
-
-        it('should properly edit data');
-
-        it('should emit event for incrementing saving');
-    });
-
-    describe('WITHDRAW SAVING', function () {
-        it('should withdraw user\'s saving');
-
-        it('should withdraw original token');
-
-        it('should invalidate saving after withdrawal');
-
-        it('should change value of saving to null');
-
-        it('should emit event for withdrawal');
-    });
 })

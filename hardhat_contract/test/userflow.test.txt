@@ -1,0 +1,49 @@
+const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
+const { deployBitsaveFixture } = require("./utils/generator");
+const { parseEther } = require("ethers/lib/utils");
+const { getJoinParams } = require("./utils/helper");
+const BS_CONSTANTS = require("./utils/bs_constants");
+
+// describe("User flow for Bitsave Protocol", () => {
+//     console.log("Welcome, I'm young Bits, a new saver on Bitsave.");
+
+//     it("shows the flow of using bitsave protocol", async() => {
+
+//     })
+// })
+
+async function run_sample() {
+    console.log("shr")
+  const { ZRC20Contracts, otherAccount, bitsave } = await deployBitsaveFixture()
+  const PaymentToken = ZRC20Contracts[0];
+
+  console.log(`
+    To use bitsave, you need to be a member first. \n
+    This begins with calling the joinBitsave transaction and paying the joining fee.
+    `);
+
+  console.log("My wallet address is: ", otherAccount.address);
+  console.log("My initial balance is:", await otherAccount.getBalance());
+
+  console.log("Calling join bitsave...");
+  const joinBitsave = await bitsave
+    .connect(otherAccount)
+    .onCrossChainCall(
+      PaymentToken.address,
+      parseEther(BS_CONSTANTS.JoinFee),
+      getJoinParams()
+    );
+  console.log(joinBitsave);
+  console.log(
+    `
+        Successfully joined bitsave!\n
+        Joining bitsave deploys a new child contract for the member.
+        The security and flow of the savings happen on this contract which
+        can only be accessed from the parent contract...\n
+        My child contract is deployed at
+    `,
+    await bitsave.connect(otherAccount).getUserChildContractAddress()
+  );
+}
+
+run_sample();

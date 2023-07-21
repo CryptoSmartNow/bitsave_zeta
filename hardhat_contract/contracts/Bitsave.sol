@@ -2,9 +2,11 @@
 pragma solidity >=0.8.7;
 
 // Uniswap
+
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "./userContract.bitsave.sol";
+
 
 import "hardhat/console.sol";
 
@@ -13,7 +15,7 @@ import "hardhat/console.sol";
 //import "@zetachain/protocol-contracts/contracts/zevm/interfaces/zContract.sol";
 //import "@zetachain/protocol-contracts/contracts/zevm/SystemContract.sol";
 
-import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
+import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol" as SH;
 import "./utils/BytesHelperLib.sol";
 import "./utils/BitsaveHelperLib.sol";
 
@@ -126,7 +128,7 @@ contract Bitsave is zContract {
       )
     );
 
-//    // retrieve stable coin used from owner address
+//    // retrieve coin used from owner address
     retrieveAmount(zrc20, amount);
 
     // todo: get the token data from msg.value
@@ -175,7 +177,7 @@ contract Bitsave is zContract {
     );
 
     // todo: use the SwapHelperLib for this instead
-    uint256 outputAmount = SwapHelperLib._doSwap(
+    uint256 outputAmount = SH.SwapHelperLib._doSwap(
       systemContract.wZetaContractAddress(),
       systemContract.uniswapv2FactoryAddress(),
       systemContract.uniswapv2Router02Address(),
@@ -185,7 +187,7 @@ contract Bitsave is zContract {
       0
     );
     bytes32 thisAddress = BytesHelperLib.addressToBytes(address(this));
-    SwapHelperLib._doWithdrawal(
+    SH.SwapHelperLib._doWithdrawal(
       targetToken,
       outputAmount,
       bytes32(thisAddress) // todo: can pay directly
@@ -199,14 +201,14 @@ contract Bitsave is zContract {
     address ownerAddress
   ) public payable {
     // check amount sent
-    if(amount > poolFee) revert BitsaveHelperLib.AmountNotEnough();
+    if(amount < poolFee) revert BitsaveHelperLib.AmountNotEnough();
     // retrieve stable coin used from owner address
     retrieveAmount(stableCoin, amount);
     // convert to original token using crossChainSwap()
-    crossChainSwap(stableCoin, originalToken, amount);
+    uint256 outputAmount = crossChainSwap(stableCoin, originalToken, amount);
     // send to owner address directly
     // IERC20(originalToken).transfer(ownerAddress, amount);
-    IZRC20(originalToken).transfer(ownerAddress, amount);
+    IZRC20(originalToken).transfer(ownerAddress, outputAmount);
   }
 
   // the join bitsave functionality implementation, charges and co
@@ -215,13 +217,13 @@ contract Bitsave is zContract {
     uint256 JoinLimitFee = 10000;
     if (joining_fee <= JoinLimitFee) revert BitsaveHelperLib.AmountNotEnough(); // todo: work on price
     // deploy child contract for user
-    address userBSAddress = address(new UserContract(msg.sender));
+    address userBSAddress = address(new UserContract(msg.sender, stableCoin));
     addressToUserBS[msg.sender] = userBSAddress;
     return userBSAddress;
   }
 
-  function getUserChildContractAddress() public view returns (address) {
-    return addressToUserBS[msg.sender];
+  function getUserChildContractAddress() public view returns (address payable) {
+    return payable(addressToUserBS[msg.sender]);
   }
 
   ///
@@ -260,7 +262,7 @@ contract Bitsave is zContract {
       savingToken = stableCoin;
     }
     // Initialize user child contract
-    address userChildContractAddress = getUserChildContractAddress();
+    address payable userChildContractAddress = getUserChildContractAddress();
     userChildContract = UserContract(userChildContractAddress);
 
     /// call create savings for child contract
@@ -276,7 +278,7 @@ contract Bitsave is zContract {
       maturityTime,
       startTime,
       penaltyPercentage,
-      savingToken,
+      tokenToSave,
       actualSaving,
       safeMode
     );
@@ -294,7 +296,7 @@ contract Bitsave is zContract {
     uint256 amount
   ) internal registeredOnly {
     // initialize userChildContract
-    address userChildContractAddress = addressToUserBS[msg.sender];
+    address payable userChildContractAddress = payable(addressToUserBS[msg.sender]);
     userChildContract = UserContract(userChildContractAddress);
     // todo: perform amount conversion and everything
     uint savingPlusAmount = amount;
@@ -306,6 +308,7 @@ contract Bitsave is zContract {
         stableCoin,
         savingPlusAmount
       );
+      tokenToRetrieve = stableCoin;
     }
     // call withdrawSavings
     uint actualSaving = BitsaveHelperLib.approveAmount(
@@ -327,10 +330,14 @@ contract Bitsave is zContract {
     string memory nameOfSavings
   ) public registeredOnly returns (bool) {
     // initialize user's child userChildContract
-    userChildContract = UserContract(addressToUserBS[msg.sender]);
+    userChildContract = UserContract(payable(addressToUserBS[msg.sender]));
     // call withdraw savings fn
     userChildContract.withdrawSaving(nameOfSavings);
     return true;
+  }
+
+  receive() external payable {
+    emit BitsaveHelperLib.Received(msg.sender, msg.value);
   }
 
 }

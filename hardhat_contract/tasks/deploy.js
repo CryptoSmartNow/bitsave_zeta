@@ -1,6 +1,6 @@
 // import { ethers } from "hardhat";
 const { task } = require("hardhat/config");
-const {USDC_ADDRESS} = require("../constants/config");
+const {USDC_ADDRESS, STABLE_C} = require("../constants/config");
 
 const SYSTEM_CONTRACT = "0x239e96c8f17C85c30100AC26F635Ea15f23E9c67";
 
@@ -18,7 +18,7 @@ const main = async (args, hre) => {
 
   const Factory = await hre.ethers.getContractFactory("Bitsave");
   const contract = await Factory.deploy(
-      USDC_ADDRESS,
+      STABLE_C,
       SYSTEM_CONTRACT
   );
   await contract.deployed();

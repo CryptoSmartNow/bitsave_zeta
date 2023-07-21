@@ -7,18 +7,19 @@ import "./Bitsave.sol";
 
 // Zetaprotocols
 // Zetaprotocols
-import "@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol";
+// import "@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol";
 import "@zetachain/protocol-contracts/contracts/zevm/interfaces/zContract.sol";
 import "@zetachain/protocol-contracts/contracts/zevm/SystemContract.sol";
 
-import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
+// import "@zetachain/zevm-example-contracts/contracts/shared/SwapHelperLib.sol";
 import "./utils/BitsaveHelperLib.sol";
 
 contract UserContract {
 
     // ****--------- DS for user saving contract -----------
-    address public bitsaveAddress;
+    address payable public bitsaveAddress;
     address payable ownerAddress;
+    address payable public stableCoin;
 
     // structure of saving data
     struct SavingDataStruct {
@@ -33,7 +34,19 @@ contract UserContract {
     }
 
     // mapping of name of saving to individual saving
-    mapping (string => SavingDataStruct) savings;
+    mapping (string => SavingDataStruct) public savings;
+    struct SavingsNamesObj {
+        string[] savingsNames;   
+    }
+
+    SavingsNamesObj private savingsNamesVar;
+    function addSavingName(string memory _name) private {
+        savingsNamesVar.savingsNames.push(_name);
+    }
+
+    function getSavingsNames() external view returns(SavingsNamesObj memory) {
+        return savingsNamesVar;
+    }
 
     // *****+++++++ DS for user saving contract ++++++++++++
 
@@ -46,11 +59,13 @@ contract UserContract {
     }
     // ******+++++++++ Security functionalities ++++++++++++
 
-    constructor(address ownerAddress) payable {
+    constructor(address _ownerAddress, address _stableCoin) payable {
         // save bitsaveAddress first // todo: retrieve correct address
         bitsaveAddress = payable(msg.sender);
         // store owner's address
-        ownerAddress = payable(ownerAddress);
+        ownerAddress = payable(_ownerAddress);
+        // store stable coin
+        stableCoin = payable(_stableCoin);
     }
 
     function retrieveToken(
@@ -104,11 +119,18 @@ contract UserContract {
         // calculate interest
         uint accumulatedInterest = 3; // todo: create interest formulae
 
-        handleTokenRetrieving(
-          tokenId,
-          amountToRetrieve
-        );
-        
+        if (isSafeMode) {
+            handleTokenRetrieving(
+                stableCoin,
+                amountToRetrieve
+            );
+        }else {
+            handleTokenRetrieving(
+                tokenId,
+                amountToRetrieve
+            );
+        }
+
         // store saving to map of savings
         savings[name] = SavingDataStruct({
             amount : amountToRetrieve,
@@ -120,6 +142,8 @@ contract UserContract {
             isSafeMode : isSafeMode,
             isValid : true
         });
+
+        addSavingName(name);
 
         emit BitsaveHelperLib.SavingCreated(
             name,
@@ -136,14 +160,21 @@ contract UserContract {
       uint256 savingPlusAmount
     ) public payable bitsaveOnly returns (uint) {
         SavingDataStruct storage toFundSavings = savings[name];
-        if (toFundSavings.isValid) revert BitsaveHelperLib.InvalidSaving();
+        if (!toFundSavings.isValid) revert BitsaveHelperLib.InvalidSaving();
         if (block.timestamp > toFundSavings.maturityTime) revert BitsaveHelperLib.InvalidTime();
 
         // handle retrieving token from contract
-        handleTokenRetrieving(
-          toFundSavings.tokenId,
-          savingPlusAmount
-        );
+        if (toFundSavings.isSafeMode) {
+            handleTokenRetrieving(
+                stableCoin,
+                savingPlusAmount
+            );
+        }else {
+            handleTokenRetrieving(
+                toFundSavings.tokenId,
+                savingPlusAmount
+            );
+        }
 
         // calculate new interest
         uint recalculatedInterest = 1;
@@ -166,12 +197,12 @@ contract UserContract {
     function withdrawSaving (string memory name) public payable bitsaveOnly returns (string memory) {
         SavingDataStruct storage toWithdrawSavings = savings[name];
         // check if saving exit
-        if (toWithdrawSavings.isValid) revert BitsaveHelperLib.InvalidSaving();
+        if (!toWithdrawSavings.isValid) revert BitsaveHelperLib.InvalidSaving();
         uint amountToWithdraw;
         // check if saving is mature
         if (block.timestamp < toWithdrawSavings.maturityTime) {
             // remove penalty from savings
-            amountToWithdraw = toWithdrawSavings.amount * (1 - toWithdrawSavings.penaltyPercentage);
+            amountToWithdraw = (toWithdrawSavings.amount * (100 - toWithdrawSavings.penaltyPercentage)) / 100;
             // todo: fn to convert token if not safe mode
         }else {
             // todo: functionality to send csa token as interest
@@ -186,13 +217,13 @@ contract UserContract {
             uint256 actualAmountToWithdraw = BitsaveHelperLib.approveAmount(
               bitsaveAddress,
               amountToWithdraw,
-              toWithdrawSavings.tokenId
+              stableCoin
             );
             // call parent for conversion
             Bitsave bitsave = Bitsave(bitsaveAddress);
             bitsave
                 .sendAsOriginalToken(
-                    toWithdrawSavings.tokenId,
+                    tokenId,
                     actualAmountToWithdraw,
                     ownerAddress
                 );
@@ -220,6 +251,10 @@ contract UserContract {
 
     function getSavingTokenId(string memory nameOfSaving) view external returns (address) {
         return savings[nameOfSaving].tokenId;
+    }
+
+    receive() external payable {
+        emit BitsaveHelperLib.Received(msg.sender, msg.value);
     }
 
 }

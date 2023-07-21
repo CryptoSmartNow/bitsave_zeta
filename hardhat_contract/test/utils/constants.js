@@ -3,7 +3,7 @@ const Opcodes = {
     JOIN: "JON",
     CREATE: "CRT",
     INCREMENT: "INC",
-    WITHDRAW: "WTD"
+    WITHDRAW: "WTD",
 }
 
 module.exports = Opcodes
