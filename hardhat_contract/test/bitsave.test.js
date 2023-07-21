@@ -93,14 +93,4 @@ describe("Bitsave zetachain v2", () => {
             )
         })
     })
-
-    describe('INCREMENT SAVING', function () {
-        it('should add to saving');
-
-        it('should ensure saving mode');
-
-        it('should properly edit data');
-
-        it('should emit event for incrementing saving');
-    });
 })

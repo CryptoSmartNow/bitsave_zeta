@@ -39,11 +39,23 @@ describe('WITHDRAW SAVING', function () {
         )
     });
 
-    it('should withdraw original token');
+    it('should invalidate saving after withdrawal', async function() {
+        const {
+            bitsave, registeredUser, reg_userChildAddress, ZRC20Contracts
+        } = await loadFixture(deployBitsaveFixture)
+        const PaymentContract = ZRC20Contracts[0]
+        const userAddress = registeredUser.address
 
-    it('should invalidate saving after withdrawal');
+        await createSaving(bitsave, registeredUser, reg_userChildAddress);
+        
+    });
 
-    it('should change value of saving to null');
+    it('should revert for invalid saving', async function() {
+        
+    });
 
-    it('should emit event for withdrawal')
+    it('should cut from immature withdrawal', async function() {
+        
+    });
+
 });

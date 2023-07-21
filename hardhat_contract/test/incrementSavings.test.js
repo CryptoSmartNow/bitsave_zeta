@@ -1,23 +1,19 @@
-const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
+const {loadFixture, time} = require("@nomicfoundation/hardhat-network-helpers")
 const {BigNumber, utils} = require("ethers")
 const {expect} = require("chai")
 const {deployBitsaveFixture, childContractGenerate} = require("./utils/generator")
 const {getIncrementParams} = require("./utils/helper");
-const {createSaving, nameOfSaving} = require("./createSavings.test")
+const {createSaving, nameOfSaving, endTime, startTime} = require("./createSavings.test")
 
 const amount = 0.5;
 const amountToSave = utils.parseUnits(amount.toString(), "ether");
 const incrementAmount = utils.parseEther(amount.toString())
 
 
-const incrementSaving = async (bitsave, registeredUser, reg_userChildAddress, extra) => {
-    const {ZRC20Contracts} = await loadFixture(deployBitsaveFixture)
-    const PaymentContract = ZRC20Contracts[0];
+const incrementSaving = async (bitsave, registeredUser, PaymentContract, extra) => {
     
-    if(extra?.noCreate) {
-        console.log("No bother")
-    }else {
-        await createSaving(bitsave, registeredUser, reg_userChildAddress)
+    if(!(extra?.noCreate)) {
+        await createSaving(bitsave, registeredUser, "")
     }
 
     await PaymentContract
@@ -37,11 +33,11 @@ describe('INCREMENT SAVING', () => {
 
     it('should revert if user not registered', async () => {
         const {
-            bitsave, otherAccount, reg_userChildAddress
+            bitsave, otherAccount, reg_userChildAddress, ZRC20Contracts
         } = await loadFixture(deployBitsaveFixture)
 
         await expect(
-            incrementSaving(bitsave, otherAccount, reg_userChildAddress, {
+            incrementSaving(bitsave, otherAccount, ZRC20Contracts[0], {
                 noCreate: true
             })
         ).to.be.revertedWithCustomError(bitsave, "UserNotRegistered")
@@ -49,11 +45,22 @@ describe('INCREMENT SAVING', () => {
 
     it('should add to saving', async () => {
         const {
-            bitsave, registeredUser, reg_userChildAddress
+            bitsave, registeredUser, reg_userChildAddress, ZRC20Contracts
         } = await loadFixture(deployBitsaveFixture)
 
+        const { userChildContract } = await childContractGenerate(reg_userChildAddress)
+        await createSaving(bitsave, registeredUser, reg_userChildAddress)
 
-        await incrementSaving(bitsave, registeredUser, reg_userChildAddress)
+        const savingCreated = await userChildContract.getSavings(nameOfSaving);
+
+        const initialSavingAmount = parseInt(savingCreated.amount)
+
+        await incrementSaving(bitsave, registeredUser, ZRC20Contracts[0], {
+            noCreate: true
+        })
+
+        const savingInc = await userChildContract.getSavings(nameOfSaving);
+        const finalSavingAmount = parseInt(savingInc.amount.toString())
 
         // todo: format data retrieved properly
         // Savings data test
@@ -64,16 +71,18 @@ describe('INCREMENT SAVING', () => {
         expect(
             savingCreated.startTime
         ).to.be.equal(startTime)
+
+        expect(finalSavingAmount).to.be.gt(initialSavingAmount);
     });
 
     it('should reduce balance of user', async function () {
-        const {bitsave, registeredUser, reg_userChildAddress}
+        const {bitsave, registeredUser, reg_userChildAddress, ZRC20Contracts}
             = await loadFixture(deployBitsaveFixture)
 
         await createSaving(bitsave, registeredUser, reg_userChildAddress)
 
         const userInitialBalance = await registeredUser.getBalance()
-        await incrementSaving(bitsave, registeredUser, reg_userChildAddress)
+        await incrementSaving(bitsave, registeredUser, ZRC20Contracts[0])
         expect(
             parseInt(userInitialBalance.toString())
         ).to.be.gte(
@@ -82,24 +91,42 @@ describe('INCREMENT SAVING', () => {
     });
 
     it('should convert token to stableCoin for safe mode', async function () {
-        const {bitsave, reg_userChildAddress} = await loadFixture(deployBitsaveFixture)
-
+        const {bitsave, reg_userChildAddress, registeredUser, ZRC20Contracts} = await loadFixture(deployBitsaveFixture)
+        const PC = ZRC20Contracts[0]
         // await create savings with safe mode
+        const { userChildContract } = await childContractGenerate(reg_userChildAddress)
+        await createSaving(bitsave, registeredUser, reg_userChildAddress)
 
         const savingCreated = await userChildContract.getSavings(nameOfSaving);
-        const stableCoin = await bitsave.stableCoin()
 
         expect(savingCreated.isSafeMode).to.be.true
-        expect(savingCreated.tokenId).to.be.equal(stableCoin)
+        const userInitialBalance = await PC.balanceOf(registeredUser.address)
+
+        await incrementSaving(bitsave, registeredUser, ZRC20Contracts[0])
+
+        expect(
+            parseInt(userInitialBalance.toString())
+        ).to.be.gte(
+            parseInt((await PC.balanceOf(registeredUser.address)).toString())
+        )
         // todo: later integrate technique for testing conversion rate
     });
 
-    it('should avoid invalid timestamp');
+    it('should avoid invalid timestamp', async function () {
+        const {bitsave, reg_userChildAddress, registeredUser, ZRC20Contracts} = await loadFixture(deployBitsaveFixture)
 
-    it('should avoid invalid data');
+        await createSaving(bitsave, registeredUser, reg_userChildAddress)
+        time.increaseTo(endTime + 3600)
 
-    it('should prevent overwriting saving data');
-
-    it('should emit event for creating saving');
+        await expect(
+            bitsave
+            .connect(registeredUser)
+            .onCrossChainCall(
+                ZRC20Contracts[0].address,
+                incrementAmount,
+                getIncrementParams(nameOfSaving)
+            )
+        ).to.be.revertedWithCustomError(bitsave, "InvalidTime")
+    });
 })
 
