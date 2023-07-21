@@ -1,4 +1,11 @@
 ### Documentation
+Bitsave solves it's problems with zeta chain using 
+1. Interoperability of zetachain
+    - Cross chain saving features (1 contract, several chains supported)
+    - Safety with savings - cross chain swap. Converts savings to stable coin
+    with the cross chain swap.
+2. Security
+    With the minimal surface for attacks, savings are kept protected since they mostly are staying at a spot
 
 ## Constants
 - bitsaveAddress => `0x6e299956270c355aAe829c2aaB435b2e81E5B5f6`
@@ -10,6 +17,7 @@
 All interaction with the contract passes through the `onCrossChainCall` method.
 After gaining the Contract object using whatever tool e.g. ethersjs,
 You can name the Contract object as `Bitsave`, format example with ethersjs.
+
 ```js
 new ethers.Contract(
     bitsaveAddress,
