@@ -19,7 +19,7 @@ describe('WITHDRAW SAVING', function () {
         await createSaving(bitsave, registeredUser, reg_userChildAddress)
         
         const initialUserBalance = await PaymentContract.balanceOf(userAddress)
-        console.log("initial", initialUserBalance, amountToSave)
+        console.log("initial", initialUserBalance)
         
         await bitsave
             .connect(registeredUser)
@@ -44,20 +44,43 @@ describe('WITHDRAW SAVING', function () {
             bitsave, registeredUser, reg_userChildAddress, ZRC20Contracts
         } = await loadFixture(deployBitsaveFixture)
         const PaymentContract = ZRC20Contracts[0]
-        const userAddress = registeredUser.address
 
         const { userChildContract } = await childContractGenerate(reg_userChildAddress);
         await createSaving(bitsave, registeredUser, reg_userChildAddress);
-        
+
         const savingCreated = await userChildContract.getSavings(nameOfSaving);
+        expect(savingCreated.isValid).to.be.true
+
+        await bitsave
+            .connect(registeredUser)
+            .onCrossChainCall(
+                PaymentContract.address,
+                0,
+                getWithdrawParams(nameOfSaving)
+            )
+        
+        const savingWithdrawn = await userChildContract.getSavings(nameOfSaving);
+        expect(savingWithdrawn.isValid).to.be.false
     });
 
     it('should revert for invalid saving', async function() {
-        
-    });
+        const {
+            bitsave, registeredUser, reg_userChildAddress, ZRC20Contracts
+        } = await loadFixture(deployBitsaveFixture)
+        const PaymentContract = ZRC20Contracts[0]
+        await createSaving(bitsave, registeredUser, reg_userChildAddress);
 
-    it('should cut from immature withdrawal', async function() {
-        
+        const { userChildContract } = await childContractGenerate(reg_userChildAddress)
+
+        await expect(
+            bitsave
+            .connect(registeredUser)
+            .onCrossChainCall(
+                PaymentContract.address,
+                0,
+                getWithdrawParams("Fake saving")
+            )
+        ).to.be.revertedWithCustomError(userChildContract, "InvalidSaving")
     });
 
 });
