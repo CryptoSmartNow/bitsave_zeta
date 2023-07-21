@@ -120,9 +120,6 @@ contract UserContract {
         uint accumulatedInterest = 3; // todo: create interest formulae
 
         if (isSafeMode) {
-            console.log("create savings");
-            console.log(stableCoin);
-            console.log(ownerAddress);
             handleTokenRetrieving(
                 stableCoin,
                 amountToRetrieve
@@ -133,7 +130,7 @@ contract UserContract {
                 amountToRetrieve
             );
         }
-        
+
         // store saving to map of savings
         savings[name] = SavingDataStruct({
             amount : amountToRetrieve,
