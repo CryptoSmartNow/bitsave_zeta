@@ -1,19 +1,24 @@
 const {loadFixture} = require("@nomicfoundation/hardhat-network-helpers")
 const {BigNumber, utils} = require("ethers")
 const {expect} = require("chai")
-const {ONE_GWEI} = require("../constants/config")
 const {deployBitsaveFixture, childContractGenerate} = require("./utils/generator")
 const {getIncrementParams} = require("./utils/helper");
 const {createSaving, nameOfSaving} = require("./createSavings.test")
 
-const amount = 1;
+const amount = 0.5;
 const amountToSave = utils.parseUnits(amount.toString(), "ether");
-const incrementAmount = utils.parseUnits((amount + 1).toString(), "ether")
+const incrementAmount = utils.parseEther(amount.toString())
 
 
-const incrementSaving = async (bitsave, registeredUser, reg_userChildAddress) => {
+const incrementSaving = async (bitsave, registeredUser, reg_userChildAddress, extra) => {
     const {ZRC20Contracts} = await loadFixture(deployBitsaveFixture)
     const PaymentContract = ZRC20Contracts[0];
+    
+    if(extra?.noCreate) {
+        console.log("No bother")
+    }else {
+        await createSaving(bitsave, registeredUser, reg_userChildAddress)
+    }
 
     await PaymentContract
         .connect(registeredUser)
@@ -30,18 +35,23 @@ const incrementSaving = async (bitsave, registeredUser, reg_userChildAddress) =>
 
 describe('INCREMENT SAVING', () => {
 
-    it('should revert if user not registered');
+    it('should revert if user not registered', async () => {
+        const {
+            bitsave, otherAccount, reg_userChildAddress
+        } = await loadFixture(deployBitsaveFixture)
+
+        await expect(
+            incrementSaving(bitsave, otherAccount, reg_userChildAddress, {
+                noCreate: true
+            })
+        ).to.be.revertedWithCustomError(bitsave, "UserNotRegistered")
+    });
 
     it('should add to saving', async () => {
         const {
             bitsave, registeredUser, reg_userChildAddress
         } = await loadFixture(deployBitsaveFixture)
 
-        await createSaving(bitsave, registeredUser, reg_userChildAddress)
-
-        const {userChildContract} = await childContractGenerate(reg_userChildAddress)
-        const savingCreated = await userChildContract
-            .getSavings(nameOfSaving);
 
         await incrementSaving(bitsave, registeredUser, reg_userChildAddress)
 

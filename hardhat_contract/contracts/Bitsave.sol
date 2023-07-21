@@ -308,6 +308,7 @@ contract Bitsave is zContract {
         stableCoin,
         savingPlusAmount
       );
+      tokenToRetrieve = stableCoin;
     }
     // call withdrawSavings
     uint actualSaving = BitsaveHelperLib.approveAmount(
