@@ -108,3 +108,6 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.js
 ```
+
+# Developement Challenges
+https://xpan.notion.site/Zetachain-hackathon-progress-9c006cb9268c442fbcc8c0e8bca69747
